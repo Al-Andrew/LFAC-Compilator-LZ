@@ -1,0 +1,132 @@
+BEGIN_GLOBAL
+
+    Var Int #example_global_variable;
+    Var Float #example_initialized_global_variable = 42.0;
+
+    //Const Char #example_global_const;  --an uninitialized const doesn't make sense
+    Const String #example_initialized_global_const = "Hello, World!! From LiZi!";
+END_GLOBAL
+
+BEGIN_DEFINITIONS
+
+    // Example trivial function
+    Func #TheMeaningOfLife() -> Int
+    BEGIN
+        #Return = 42;
+    END
+
+    // Example function with a parameter and control flow
+    Func #IsMeaningOfLife(Int #x) -> Bool
+    BEGIN
+
+        If( #x == 42 )
+        BEGIN
+            #Return = True;
+        END
+        Else
+        BEGIN
+            #Return = False;
+        END;
+    END
+    
+    //Example function with multiple parameters
+    Func #PrintDivizorsBetween(Int #begin, Int #end, Int #n) -> Int
+    BEGIN
+        Var Int #count = 0; // Variable inside the function scope
+        While( #begin <= #end )
+        BEGIN
+            If( #begin % #end == 0 )
+            BEGIN
+                // The intrinsic function #PrintfLn() works just like printf() in c
+                #PrintfLn("X: %d", #x); 
+            END;
+            #begin = #begin + 1;
+        END;
+    #Return = #count;
+    END
+
+    // A user defined type
+    Struct $Vector
+    BEGIN
+        Var Int #x;
+        Var Int #y;
+    END
+
+    // Example function that uses user defined types
+    Func #VectorAdd($Vector #a, $Vector #b) -> $Vector 
+    BEGIN
+        #Return.#x = #a.#x + #b.#x;
+        #Return.#y = #a.#y + #b.#y;
+    END
+
+END_DEFINITIONS
+
+BEGIN_MAIN
+    // Basic types and literals
+    Var Int #myint = 42;
+    Var Float #myfloat = 42.0;
+    Var Bool #mybool = False;
+    Var Char #mychar = 'c';
+    Var String #mystring = "LiZi";
+
+    // We can use them in PrintfLn
+    #PrintfLn("myint: %d", #myint);
+    #PrintfLn("myfloat: %f", #myfloat);
+    #PrintfLn("mybool: %d", #mybool);
+    #PrintfLn("mychar: %c", #mychar);
+    #PrintfLn("mystring: %s", #mystring);
+
+    // We can use them in expressions
+    Var Int #expr = #myint;
+    #expr = #expr + 2;
+    #expr = #expr - 2;
+    #expr = #expr * 2;
+    #expr = #expr / 2;
+
+    // We can't mix the types though
+    Var Float #fexpr = 0.0;
+    #fexpr = 2.0 * 5.0;
+    // #fexpr = #expr - 1; -- type missmatch
+
+    // Comparison expressions have type Bool
+    #mybool = #expr == #myint;
+    // But we can only compare expressions of the same type
+    // #mybool = #mybool == #myfloat -- type missmatch
+
+    // If then Else:
+    If(#mybool)
+    BEGIN
+        #myfloat = 42.0;
+    END
+    Else
+    BEGIN
+        If(#myint == 42)
+        BEGIN
+            #myfloat = 32.0;
+        END
+        Else
+        BEGIN
+            #myfloat = 22.0;
+        END;
+    END;
+    // While
+    While( #myint != 0 )
+    BEGIN
+        #mybool = ! #mybool; // The negation operator works on boolean expressions only
+    END;
+
+    // Function calls are considered expressions
+
+    #myint = #TheMeaningOfLife();
+    #mybool = #IsMeaningOfLife(#myint) && True;
+
+    // User defined types can be initialized piecewise
+    Var $Vector #myvec;
+    #myvec.#x = 42;
+    #myvec.#y =  0;
+    Var $Vector #myvec2;
+    #myvec2.#x =  0;
+    #myvec2.#y = 42;
+
+    #myvec = #VectorAdd(#myvec, #myvec2);
+END_MAIN
