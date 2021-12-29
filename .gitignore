@@ -1,5 +1,6 @@
 build/
 temp/
-Functions.txt
-Vars.txt
 .vscode/
+Vars.txt
+Functions.txt
+UDTypes.txt
