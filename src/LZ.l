@@ -1,12 +1,13 @@
 %{
 #include <stdio.h>
+#include "symboltable.h"
 #include "y.tab.h"
 %}
 %option noyywrap
 
 %%
 
-"Int"|"Float"|"Char"|"String"|"Bool" {return TK_TYPE;}
+"Int"|"Float"|"Char"|"String"|"Bool" { yylval.udtype = malloc(sizeof(UDType)); yylval.udtype->typename = strdup(yytext); return TK_TYPE; }
 
 "Struct" {return TK_KEYWORD_STRUCT;}
 "Func" {return TK_KEYWORD_FUNC;}
@@ -40,9 +41,9 @@
 
 
 #[_a-zA-Z][_a-zA-Z0-9]* { yylval.id = strdup(yytext);  return TK_IDENTIFIER;}
-$[_a-zA-Z][_a-zA-Z0-9]* {return TK_TYPEIDENTIFIER;}
+$[_a-zA-Z][_a-zA-Z0-9]* { yylval.udtype = malloc(sizeof(UDType)); yylval.udtype->typename = strdup(yytext);  return TK_TYPEIDENTIFIER;}
 
-"-"?[0-9]+ {return TK_LITERAL_INT;}
+"-"?[0-9]+ {  yylval.id = strdup(yytext);  return TK_LITERAL_INT;}
 "-"?[0-9]+.[0-9]+ {return TK_LITERAL_FLOAT;}
 "True"|"False" {return TK_LITERAL_BOOL;}
 \'.\' {return TK_LITERAL_CHAR;}

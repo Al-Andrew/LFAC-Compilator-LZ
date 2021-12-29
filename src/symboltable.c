@@ -4,54 +4,127 @@
 #include <stdio.h>
 
 
-static Symbol* SymbolTable = NULL;
-static Symbol* FunctionTable = NULL;
+static VarSymbol* SymbolTable = NULL;
+static FuncSymbol* FunctionTable = NULL;
+static UDType* UdTypeTable = NULL;
 
-static Symbol* Put(Symbol** table, char* name) {
-    Symbol* ret = malloc(sizeof(Symbol));
+UDType* UDTypePut(char* typename, VarSymbol* table) {
+    UDType* ret = malloc(sizeof(UDType));
 
-    ret->name = malloc (strlen(name)+1);
-    strcpy(ret->name, name);
-    ret->next = *table;
-    *table = ret;
+    ret->typename = malloc (strlen(typename)+1);
+    strcpy(ret->typename, typename);
+    ret->inner_table = table;
+
+    ret->next = UdTypeTable;
+    UdTypeTable = ret;
     return ret;
 }
 
+UDType* UDTypeGet(char* typename) {
+    UDType* ret;
+    for (ret = UdTypeTable; ret != NULL; ret = ret->next)
+        if (strcmp (ret->typename,typename) == 0)
+            return ret;
+    return NULL;
+}
 
-static Symbol* Get(Symbol** table, char* name) {
-    Symbol* ret;
-    for (ret = *table; ret != NULL; ret = ret->next)
+VarSymbol* VarPut(char* name, char* typename) {
+    VarSymbol* ret = malloc(sizeof(VarSymbol));
+
+    ret->name = malloc (strlen(name)+1);
+    strcpy(ret->name, name);
+    ret->typename = malloc (strlen(typename)+1);
+    strcpy(ret->typename, typename);
+
+    ret->next = SymbolTable;
+    SymbolTable = ret;
+    return ret;
+}
+
+VarSymbol* VarGet(char* name) {
+    VarSymbol* ret;
+    for (ret = SymbolTable; ret != NULL; ret = ret->next)
         if (strcmp (ret->name,name) == 0)
             return ret;
     return NULL;
 }
 
-void Print(Symbol** table, char* filename) {
-    Symbol* current = *table;
-    FILE* out = fopen(filename, "w");
+FuncSymbol* FunctionPut(char* name, char* typename) {
+    FuncSymbol* ret = malloc(sizeof(FuncSymbol));
+
+    ret->name = malloc (strlen(name)+1);
+    strcpy(ret->name, name);
+
+    ret->ret_typename = malloc(strlen(typename) + 1);
+    strcpy(ret->ret_typename, typename);
+
+    ret->next = FunctionTable;
+    FunctionTable = ret;
+    return ret;
+}
+
+
+FuncSymbol* FunctionGet(char* name) {
+    FuncSymbol* ret;
+    for (ret = FunctionTable; ret != NULL; ret = ret->next)
+        if (strcmp (ret->name,name) == 0)
+            return ret;
+    return NULL;
+}
+
+void PrintVarsImpl(VarSymbol* table, const char* mode) {
+    VarSymbol* current = table;
+    FILE* out = fopen("Vars.txt", mode);
     while(current != NULL ) {
-        fprintf(out, "{\n    name: %s\n}\n", 
-                current->name );
+        fprintf(out, "{\n    name: %s\n    type: %s\n", 
+                current->name,
+                current->typename );
+        if(current->typename[0] == '$') {
+            fprintf(out, "    inner_table: {\n");
+            UDType* inner = UDTypeGet(current->typename);
+            PrintVarsImpl(inner->inner_table, "a+");
+            fprintf(out, "}\n");
+        }
+        fprintf(out, "}\n");
         current = current->next;
     }
+    fclose(out);
 }
 
-Symbol* SymbolPut(char* name) {
-    return Put(&SymbolTable, name);
-}
-Symbol* SymbolGet(char* name) {
-    return Get(&SymbolTable, name);
+void PrintVars() {
+    PrintVarsImpl(SymbolTable, "w");
 }
 
-Symbol* FunctionPut(char* name) {
-    return Put(&FunctionTable, name);
-}
-Symbol* FunctionGet(char* name) {
-    return Get(&FunctionTable, name);
-}
-void PrintSymbols() {
-    Print(&SymbolTable, "Symbols.txt");
-}
 void PrintFunctions() {
-    Print(&FunctionTable, "Functions.txt");
+    FuncSymbol* current = FunctionTable;
+    FILE* out = fopen("Functions.txt", "w");
+    while(current != NULL ) {
+        fprintf(out, "{\n    name: %s\n    ret_type: %s\n}\n", 
+                current->name,
+                current->ret_typename );
+        current = current->next;
+    }
+    fclose(out);
+}
+
+void PrintUDTYpesImpl(UDType* table, const char* mode) {
+    UDType* current = table;
+    FILE* out = fopen("UDTypes.txt", mode);
+    while(current != NULL ) {
+        fprintf(out, "{\n    type: %s\n", 
+                current->typename );
+        if(current->typename[0] == '$') {
+            fprintf(out, "    inner_table: {\n");
+            UDType* inner = UDTypeGet(current->typename);
+            PrintUDTYpesImpl(inner, "a+");
+            fprintf(out, "}\n");
+        }
+        fprintf(out, "}\n");
+        current = current->next;
+    }
+    fclose(out);
+}
+
+void PrintUDTypes() {
+    PrintUDTYpesImpl(UdTypeTable, "w");
 }
