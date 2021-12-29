@@ -2,10 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h> 
+#include "symboltable.h"
 extern FILE* yyin;
 extern char* yytext;
 extern int yylineno;
 %}
+
+%union {
+    char* id;
+}
 
 /*Keywords*/
 %token TK_KEYWORD_STRUCT TK_KEYWORD_FUNC TK_KEYWORD_VAR TK_KEYWORD_CONST TK_KEYWORD_IF TK_KEYWORD_ELSE TK_KEYWORD_WHILE
@@ -13,7 +18,7 @@ extern int yylineno;
 %token TK_BEGIN_GLOBAL TK_END_GLOBAL TK_BEGIN_DEFINITIONS TK_END_DEFINITIONS TK_BEGIN TK_END TK_ARROW
 %token TK_BEGIN_MAIN TK_END_MAIN
 /*Types and identifiers*/
-%token TK_TYPE TK_IDENTIFIER TK_TYPEIDENTIFIER
+%token TK_TYPE <id>TK_IDENTIFIER TK_TYPEIDENTIFIER
 /*Operators*/
 %token TK_OP_AND TK_OP_OR TK_OP_EQ TK_OP_NEQ TK_OP_GE TK_OP_LE
 /*Literals*/
@@ -32,7 +37,7 @@ extern int yylineno;
 %start program
 %%
 
-program: globals definitions main {printf("Program corect sintactic\n");}
+program: globals definitions main {printf("Program corect sintactic\n"); PrintFunctions(); PrintSymbols(); }
       | definitions main
       | globals main
       | main
@@ -47,8 +52,8 @@ globalsList:  varDeclaration ';' globalsList
             | constDeclaration ';'
             ;
 
-varDeclaration: TK_KEYWORD_VAR type TK_IDENTIFIER
-            | TK_KEYWORD_VAR type TK_IDENTIFIER '=' expression
+varDeclaration: TK_KEYWORD_VAR type TK_IDENTIFIER              {SymbolPut($3);}
+            | TK_KEYWORD_VAR type TK_IDENTIFIER '=' expression {SymbolPut($3);}
             ;
 
 varAssignment: TK_IDENTIFIER '=' expression
@@ -56,7 +61,7 @@ varAssignment: TK_IDENTIFIER '=' expression
              | TK_IDENTIFIER '.' TK_IDENTIFIER '=' expression
              ;
 
-constDeclaration: TK_KEYWORD_CONST type TK_IDENTIFIER '=' expression
+constDeclaration: TK_KEYWORD_CONST type TK_IDENTIFIER '=' expression {SymbolPut($3);}
             ;
 
 definitions: TK_BEGIN_DEFINITIONS definitionsList TK_END_DEFINITIONS
@@ -68,8 +73,8 @@ definitionsList: functionDefinition definitionsList
                | userDefinedType
                ;
 
-functionDefinition: TK_KEYWORD_FUNC TK_IDENTIFIER '(' functionParametersList ')' TK_ARROW type statementsBlock
-                  | TK_KEYWORD_FUNC TK_IDENTIFIER '('')' TK_ARROW type statementsBlock
+functionDefinition: TK_KEYWORD_FUNC TK_IDENTIFIER '(' functionParametersList ')' TK_ARROW type statementsBlock {FunctionPut($2);}
+                  | TK_KEYWORD_FUNC TK_IDENTIFIER '('')' TK_ARROW type statementsBlock    {FunctionPut($2);}
                   ;
 
 userDefinedType: TK_KEYWORD_STRUCT TK_TYPEIDENTIFIER TK_BEGIN globalsList TK_END

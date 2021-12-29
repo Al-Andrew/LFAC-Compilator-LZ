@@ -1,14 +1,18 @@
 #ifndef LZ_SYMBOLTABLE_H
 #define LZ_SYMBOLTABLE_H
 
-struct symrec {
-    char *name; /* name of symbol */
-    struct symrec *next; /* link field */
+struct Symbol{
+    char* name; 
+
+    struct Symbol *next;
 };
-typedef struct symrec symrec;
+typedef struct Symbol Symbol;
 
-symrec *sym_table = (symrec*)0;
-symrec *putsym ();
-symrec *getsym ();
+Symbol* SymbolPut(char* name);
+Symbol* SymbolGet(char* name);
 
-#endif 
+Symbol* FunctionPut(char* name);
+Symbol* FunctionGet(char* name);
+void PrintSymbols();
+void PrintFunctions();
+#endif

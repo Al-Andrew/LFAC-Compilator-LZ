@@ -39,7 +39,7 @@
 "<=" {return TK_OP_LE;}
 
 
-#[_a-zA-Z][_a-zA-Z0-9]* {return TK_IDENTIFIER;}
+#[_a-zA-Z][_a-zA-Z0-9]* { yylval.id = strdup(yytext);  return TK_IDENTIFIER;}
 $[_a-zA-Z][_a-zA-Z0-9]* {return TK_TYPEIDENTIFIER;}
 
 "-"?[0-9]+ {return TK_LITERAL_INT;}

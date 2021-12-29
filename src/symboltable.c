@@ -1,21 +1,57 @@
 #include <stdlib.h>
-#include <symboltable.h>
+#include <string.h>
+#include "symboltable.h"
+#include <stdio.h>
 
 
-symrec* putsym ( char *sym_name ) {
-    symrec* ptr;
-    ptr = (symrec*)malloc(sizeof(symrec));
-    ptr->name = (char *) malloc (strlen(sym_name)+1);
-    strcpy (ptr->name,sym_name);
-    ptr->next = (symrec*)sym_table;
-    sym_table = ptr;
-    return ptr;
+static Symbol* SymbolTable = NULL;
+static Symbol* FunctionTable = NULL;
+
+static Symbol* Put(Symbol** table, char* name) {
+    Symbol* ret = malloc(sizeof(Symbol));
+
+    ret->name = malloc (strlen(name)+1);
+    strcpy(ret->name, name);
+    ret->next = *table;
+    *table = ret;
+    return ret;
 }
 
-symrec* getsym (char* sym_name) {
-    symrec *ptr;
-    for (ptr = sym_table; ptr != (symrec *) 0; ptr = (symrec *)ptr->next)
-        if (strcmp (ptr->name,sym_name) == 0)
-            return ptr;
-    return 0;
+
+static Symbol* Get(Symbol** table, char* name) {
+    Symbol* ret;
+    for (ret = *table; ret != NULL; ret = ret->next)
+        if (strcmp (ret->name,name) == 0)
+            return ret;
+    return NULL;
+}
+
+void Print(Symbol** table, char* filename) {
+    Symbol* current = *table;
+    FILE* out = fopen(filename, "w");
+    while(current != NULL ) {
+        fprintf(out, "{\n    name: %s\n}\n", 
+                current->name );
+        current = current->next;
+    }
+}
+
+Symbol* SymbolPut(char* name) {
+    return Put(&SymbolTable, name);
+}
+Symbol* SymbolGet(char* name) {
+    return Get(&SymbolTable, name);
+}
+
+Symbol* FunctionPut(char* name) {
+    return Put(&FunctionTable, name);
+}
+Symbol* FunctionGet(char* name) {
+    return Get(&FunctionTable, name);
+}
+void PrintSymbols() {
+    Print(&SymbolTable, "Symbols.txt");
+}
+void PrintFunctions() {
+    Print(&FunctionTable, "Functions.txt");
 }

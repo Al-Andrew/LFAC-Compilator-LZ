@@ -1,5 +1,5 @@
 LZ: folders lex yac
-	gcc temp/lex.yy.c temp/y.tab.c -o build/LZ
+	gcc temp/lex.yy.c temp/y.tab.c src/symboltable.c -I src/ -o build/LZ
 
 clean: 
 	rm -rf build/ temp/
