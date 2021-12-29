@@ -69,6 +69,11 @@ BEGIN_MAIN
     Var Char #mychar = 'c';
     Var String #mystring = "LiZi";
 
+    // We can also have arrays of all basic types:
+    Var Int[15] #myarray;
+    // Each element can be adressed individually:
+    #myarray[0] = 15;
+
     // We can use them in PrintfLn
     #PrintfLn("myint: %d", #myint);
     #PrintfLn("myfloat: %f", #myfloat);
