@@ -1,0 +1,21 @@
+
+------------------
+output: 
+Program corect sintactic
+------------------
+functions: 
+------------------
+variables: 
+{
+    name: #inside
+    typename: Int
+    is_const: false
+    stackframe: #Main_
+}
+{
+    name: #outsite
+    typename: Int
+    is_const: false
+    stackframe: #Main_
+}
+------------------
