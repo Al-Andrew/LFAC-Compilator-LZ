@@ -4,8 +4,8 @@
 #include <stdio.h>
 
 
-static VarSymbol* VarsTable = NULL;
-static FuncSymbol* FunctionsTable = NULL;
+VarSymbol* VarsTable = NULL;
+FuncSymbol* FunctionsTable = NULL;
 
 /**========================================================================
  *                           SECTION VarSymbol Functions
@@ -18,7 +18,10 @@ VarSymbol* VarPut(char* name, char* typename, bool is_const) {
     strcpy(ret->name, name);
     ret->typename = malloc (strlen(typename)+1);
     strcpy(ret->typename, typename);
+
+    ret->member_of = NULL;
     ret->is_const = is_const;
+
 
     ret->next = VarsTable;
     VarsTable = ret;
@@ -37,10 +40,11 @@ void PrintVars() {
     VarSymbol* current = VarsTable;
     FILE* out = fopen("Vars.txt", "w");
     while(current != NULL ) {
-        fprintf(out, "{\n    name: %s\n    typename: %s\n    is_const: %s\n}\n", 
+        fprintf(out, "{\n    name: %s\n    typename: %s\n    is_const: %s\n    stackframe: %s\n}\n", 
                 current->name,
                 current->typename,
-                current->is_const?"true":"false" );
+                current->is_const?"true":"false",
+                current->stackframe );
         current = current->next;
     }
 }

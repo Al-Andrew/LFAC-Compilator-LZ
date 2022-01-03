@@ -45,7 +45,7 @@ program: globals definitions main {printf("Program corect sintactic\n"); PrintFu
       | main
       ;
 
-globals: TK_BEGIN_GLOBAL globalsList TK_END_GLOBAL
+globals: TK_BEGIN_GLOBAL globalsList TK_END_GLOBAL { VarSymbol* curr = VarsTable; while( curr != NULL ) { strcat(curr->stackframe, "global_"); curr = curr->next; } } 
       ;
 
 globalsList:  varDeclaration ';' globalsList
@@ -54,8 +54,8 @@ globalsList:  varDeclaration ';' globalsList
             | constDeclaration ';'
             ;
 
-varDeclaration: TK_KEYWORD_VAR typename TK_IDENTIFIER              {VarPut($3, $2, false);}
-            | TK_KEYWORD_VAR typename TK_IDENTIFIER '=' expression {VarPut($3, $2, false);}
+varDeclaration: TK_KEYWORD_VAR typename TK_IDENTIFIER              { VarPut($3, $2, false); }
+            | TK_KEYWORD_VAR typename TK_IDENTIFIER '=' expression { VarPut($3, $2, false); }
             ;
 
 varAssignment: TK_IDENTIFIER '=' expression
@@ -63,7 +63,7 @@ varAssignment: TK_IDENTIFIER '=' expression
              | TK_IDENTIFIER '.' TK_IDENTIFIER '=' expression
              ;
 
-constDeclaration: TK_KEYWORD_CONST typename TK_IDENTIFIER '=' expression {VarPut($3, $2, true);}
+constDeclaration: TK_KEYWORD_CONST typename TK_IDENTIFIER '=' expression { VarPut($3, $2, true);}
             ;
 
 definitions: TK_BEGIN_DEFINITIONS definitionsList TK_END_DEFINITIONS
@@ -75,12 +75,18 @@ definitionsList: functionDefinition definitionsList
                | userDefinedType
                ;
 
-functionDefinition: TK_KEYWORD_FUNC TK_IDENTIFIER '(' functionParametersList ')' TK_ARROW typename statementsBlock {FunctionPut($2);}
-                  | TK_KEYWORD_FUNC TK_IDENTIFIER '('')' TK_ARROW typename statementsBlock    {FunctionPut($2);}
+functionDefinition: TK_KEYWORD_FUNC TK_IDENTIFIER '(' functionParametersList ')' TK_ARROW typename statementsBlock { VarSymbol* curr = VarsTable; while( curr != NULL && curr->stackframe[0] == 0 ) { strcat(curr->stackframe, $2); strcat(curr->stackframe, "_"); curr = curr->next; } FunctionPut($2); }
+                  | TK_KEYWORD_FUNC TK_IDENTIFIER '('')' TK_ARROW typename statementsBlock    { VarSymbol* curr = VarsTable; while( curr != NULL && curr->stackframe[0] == 0 ) { strcat(curr->stackframe, $2); strcat(curr->stackframe, "_"); curr = curr->next; } FunctionPut($2); }
                   ;
 
-userDefinedType: TK_KEYWORD_STRUCT TK_TYPEIDENTIFIER TK_BEGIN globalsList TK_END
+userDefinedType: TK_KEYWORD_STRUCT TK_TYPEIDENTIFIER TK_BEGIN udVarList TK_END {  VarSymbol* curr = VarsTable; while( curr != NULL && curr->stackframe[0] == 0 ) { strcat(curr->stackframe, $2); strcat(curr->stackframe, "_"); curr = curr->next; } }
                ;
+
+udVarList: varDeclaration ';' udVarList
+         | varDeclaration ';'
+         | constDeclaration ';' udVarList
+         | constDeclaration ';'
+         ;
 
 
 functionParametersList: typename TK_IDENTIFIER ',' functionParametersList
@@ -92,7 +98,7 @@ functionCallParametersList: expression ',' functionCallParametersList
                           ;
 
 
-main: TK_BEGIN_MAIN statementsList TK_END_MAIN
+main: TK_BEGIN_MAIN statementsList TK_END_MAIN  { VarSymbol* curr = VarsTable; while( curr != NULL && curr->stackframe[0] == 0 ) { strcat(curr->stackframe, "Main_"); curr = curr->next;  }}
     ;
 
 statementsBlock: TK_BEGIN statementsList TK_END

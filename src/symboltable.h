@@ -3,9 +3,14 @@
 
 #include <stdbool.h>
 
+#define LZ_MAX_STACKFRAME_LEN 255
+
 struct VarSymbol{
     char* name;
     char* typename;
+    char stackframe[LZ_MAX_STACKFRAME_LEN];
+    char* member_of;
+
     bool is_const;
 
     struct VarSymbol *next;
@@ -28,4 +33,7 @@ FuncSymbol* FunctionGet(char* name);
 
 void PrintVars();
 void PrintFunctions();
+
+extern VarSymbol* VarsTable;
+extern FuncSymbol* FunctionsTable;
 #endif
