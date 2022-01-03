@@ -9,7 +9,11 @@ if [ $# -eq 1 ]; then
     if [ "$1" = "update" ]; then
         echo "Updating expected results"
         UPDATE=1
-    else
+    else if [ "$1" = "clean" ]; then
+        rm -rf $EXPECTED_PATH/*
+        rm -rf $LATEST_PATH/*
+        exit 0
+    fi
         echo "Command not recognized"
         exit 1
     fi
