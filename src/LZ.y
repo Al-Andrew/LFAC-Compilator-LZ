@@ -45,7 +45,7 @@ program: globals definitions main {printf("Program corect sintactic\n"); PrintFu
       | main
       ;
 
-globals: TK_BEGIN_GLOBAL globalsList TK_END_GLOBAL { VarSymbol* curr = VarsTable; while( curr != NULL ) { strcat(curr->stackframe, "global_"); curr = curr->next; } } 
+globals: TK_BEGIN_GLOBAL globalsList TK_END_GLOBAL { PushStackFrame("global"); } 
       ;
 
 globalsList:  varDeclaration ';' globalsList
@@ -75,11 +75,11 @@ definitionsList: functionDefinition definitionsList
                | userDefinedType
                ;
 
-functionDefinition: TK_KEYWORD_FUNC TK_IDENTIFIER '(' functionParametersList ')' TK_ARROW typename statementsBlock { VarSymbol* curr = VarsTable; while( curr != NULL && curr->stackframe[0] == 0 ) { strcat(curr->stackframe, $2); strcat(curr->stackframe, "_"); curr = curr->next; } FunctionPut($2); }
-                  | TK_KEYWORD_FUNC TK_IDENTIFIER '('')' TK_ARROW typename statementsBlock    { VarSymbol* curr = VarsTable; while( curr != NULL && curr->stackframe[0] == 0 ) { strcat(curr->stackframe, $2); strcat(curr->stackframe, "_"); curr = curr->next; } FunctionPut($2); }
+functionDefinition: TK_KEYWORD_FUNC TK_IDENTIFIER '(' functionParametersList ')' TK_ARROW typename statementsBlock { PushStackFrame($2); FunctionPut($2); }
+                  | TK_KEYWORD_FUNC TK_IDENTIFIER '('')' TK_ARROW typename statementsBlock    { PushStackFrame($2); FunctionPut($2); }
                   ;
 
-userDefinedType: TK_KEYWORD_STRUCT TK_TYPEIDENTIFIER TK_BEGIN udVarList TK_END {  VarSymbol* curr = VarsTable; while( curr != NULL && curr->stackframe[0] == 0 ) { strcat(curr->stackframe, $2); strcat(curr->stackframe, "_"); curr = curr->next; } }
+userDefinedType: TK_KEYWORD_STRUCT TK_TYPEIDENTIFIER TK_BEGIN udVarList TK_END { PushStackFrame($2); }
                ;
 
 udVarList: varDeclaration ';' udVarList
@@ -98,7 +98,7 @@ functionCallParametersList: expression ',' functionCallParametersList
                           ;
 
 
-main: TK_BEGIN_MAIN statementsList TK_END_MAIN  { VarSymbol* curr = VarsTable; while( curr != NULL && curr->stackframe[0] == 0 ) { strcat(curr->stackframe, "Main_"); curr = curr->next;  }}
+main: TK_BEGIN_MAIN statementsList TK_END_MAIN  { PushStackFrame("#Main"); }
     ;
 
 statementsBlock: TK_BEGIN statementsList TK_END

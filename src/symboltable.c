@@ -10,6 +10,14 @@ FuncSymbol* FunctionsTable = NULL;
 /**========================================================================
  *                           SECTION VarSymbol Functions
  *========================================================================**/
+void PushStackFrame(char* frame) {
+    VarSymbol* curr = VarsTable;
+    while( curr != NULL && curr->stackframe[0] == 0 ) { 
+        strcat(curr->stackframe, frame);
+        strcat(curr->stackframe, "_");
+        curr = curr->next;
+    }
+}
 
 VarSymbol* VarPut(char* name, char* typename, bool is_const) {
     VarSymbol* ret = malloc(sizeof(VarSymbol));
@@ -19,7 +27,6 @@ VarSymbol* VarPut(char* name, char* typename, bool is_const) {
     ret->typename = malloc (strlen(typename)+1);
     strcpy(ret->typename, typename);
 
-    ret->member_of = NULL;
     ret->is_const = is_const;
 
 

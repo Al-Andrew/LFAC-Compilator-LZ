@@ -9,8 +9,6 @@ struct VarSymbol{
     char* name;
     char* typename;
     char stackframe[LZ_MAX_STACKFRAME_LEN];
-    char* member_of;
-
     bool is_const;
 
     struct VarSymbol *next;
@@ -24,6 +22,7 @@ struct FuncSymbol{
 };
 typedef struct FuncSymbol FuncSymbol;
 
+void PushStackFrame(char* frame);
 
 VarSymbol* VarPut(char* name, char* typename, bool is_const);
 VarSymbol* VarGet(char* name);
