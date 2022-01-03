@@ -4,54 +4,75 @@
 #include <stdio.h>
 
 
-static Symbol* SymbolTable = NULL;
-static Symbol* FunctionTable = NULL;
+static VarSymbol* VarsTable = NULL;
+static FuncSymbol* FunctionsTable = NULL;
 
-static Symbol* Put(Symbol** table, char* name) {
-    Symbol* ret = malloc(sizeof(Symbol));
+/**========================================================================
+ *                           SECTION VarSymbol Functions
+ *========================================================================**/
+
+VarSymbol* VarPut(char* name, char* typename, bool is_const) {
+    VarSymbol* ret = malloc(sizeof(VarSymbol));
 
     ret->name = malloc (strlen(name)+1);
     strcpy(ret->name, name);
-    ret->next = *table;
-    *table = ret;
+    ret->typename = malloc (strlen(typename)+1);
+    strcpy(ret->typename, typename);
+    ret->is_const = is_const;
+
+    ret->next = VarsTable;
+    VarsTable = ret;
     return ret;
 }
 
-
-static Symbol* Get(Symbol** table, char* name) {
-    Symbol* ret;
-    for (ret = *table; ret != NULL; ret = ret->next)
+VarSymbol* VarGet(char* name) {
+    VarSymbol* ret;
+    for (ret = VarsTable; ret != NULL; ret = ret->next)
         if (strcmp (ret->name,name) == 0)
             return ret;
     return NULL;
 }
 
-void Print(Symbol** table, char* filename) {
-    Symbol* current = *table;
-    FILE* out = fopen(filename, "w");
+void PrintVars() {
+    VarSymbol* current = VarsTable;
+    FILE* out = fopen("Vars.txt", "w");
+    while(current != NULL ) {
+        fprintf(out, "{\n    name: %s\n    typename: %s\n    is_const: %s\n}\n", 
+                current->name,
+                current->typename,
+                current->is_const?"true":"false" );
+        current = current->next;
+    }
+}
+
+/**========================================================================
+ *                           SECTION FuncSymbol Functions
+ *========================================================================**/
+
+FuncSymbol* FunctionPut(char* name) {
+    FuncSymbol* ret = malloc(sizeof(FuncSymbol));
+
+    ret->name = malloc (strlen(name)+1);
+    strcpy(ret->name, name);
+    ret->next = FunctionsTable;
+    FunctionsTable = ret;
+    return ret;
+}
+
+FuncSymbol* FunctionGet(char* name) {
+    FuncSymbol* ret;
+    for (ret = FunctionsTable; ret != NULL; ret = ret->next)
+        if (strcmp (ret->name,name) == 0)
+            return ret;
+    return NULL;
+}
+
+void PrintFunctions() {
+    FuncSymbol* current = FunctionsTable;
+    FILE* out = fopen("Functions.txt", "w");
     while(current != NULL ) {
         fprintf(out, "{\n    name: %s\n}\n", 
                 current->name );
         current = current->next;
     }
-}
-
-Symbol* SymbolPut(char* name) {
-    return Put(&SymbolTable, name);
-}
-Symbol* SymbolGet(char* name) {
-    return Get(&SymbolTable, name);
-}
-
-Symbol* FunctionPut(char* name) {
-    return Put(&FunctionTable, name);
-}
-Symbol* FunctionGet(char* name) {
-    return Get(&FunctionTable, name);
-}
-void PrintSymbols() {
-    Print(&SymbolTable, "Symbols.txt");
-}
-void PrintFunctions() {
-    Print(&FunctionTable, "Functions.txt");
 }

@@ -18,12 +18,14 @@ extern int yylineno;
 %token TK_BEGIN_GLOBAL TK_END_GLOBAL TK_BEGIN_DEFINITIONS TK_END_DEFINITIONS TK_BEGIN TK_END TK_ARROW
 %token TK_BEGIN_MAIN TK_END_MAIN
 /*Types and identifiers*/
-%token TK_TYPE <id>TK_IDENTIFIER TK_TYPEIDENTIFIER
+%token <id>TK_TYPE <id>TK_IDENTIFIER <id>TK_TYPEIDENTIFIER
 /*Operators*/
 %token TK_OP_AND TK_OP_OR TK_OP_EQ TK_OP_NEQ TK_OP_GE TK_OP_LE
 /*Literals*/
 %token TK_LITERAL_INT TK_LITERAL_FLOAT TK_LITERAL_BOOL TK_LITERAL_CHAR TK_LITERAL_STRING
 
+
+%type <id>typename
 
 %right '='
 %left TK_OP_EQ TK_OP_NEQ TK_OP_GE TK_OP_LE '<' '>'
@@ -37,7 +39,7 @@ extern int yylineno;
 %start program
 %%
 
-program: globals definitions main {printf("Program corect sintactic\n"); PrintFunctions(); PrintSymbols(); }
+program: globals definitions main {printf("Program corect sintactic\n"); PrintFunctions(); PrintVars(); }
       | definitions main
       | globals main
       | main
@@ -52,8 +54,8 @@ globalsList:  varDeclaration ';' globalsList
             | constDeclaration ';'
             ;
 
-varDeclaration: TK_KEYWORD_VAR type TK_IDENTIFIER              {SymbolPut($3);}
-            | TK_KEYWORD_VAR type TK_IDENTIFIER '=' expression {SymbolPut($3);}
+varDeclaration: TK_KEYWORD_VAR typename TK_IDENTIFIER              {VarPut($3, $2, false);}
+            | TK_KEYWORD_VAR typename TK_IDENTIFIER '=' expression {VarPut($3, $2, false);}
             ;
 
 varAssignment: TK_IDENTIFIER '=' expression
@@ -61,7 +63,7 @@ varAssignment: TK_IDENTIFIER '=' expression
              | TK_IDENTIFIER '.' TK_IDENTIFIER '=' expression
              ;
 
-constDeclaration: TK_KEYWORD_CONST type TK_IDENTIFIER '=' expression {SymbolPut($3);}
+constDeclaration: TK_KEYWORD_CONST typename TK_IDENTIFIER '=' expression {VarPut($3, $2, true);}
             ;
 
 definitions: TK_BEGIN_DEFINITIONS definitionsList TK_END_DEFINITIONS
@@ -73,16 +75,16 @@ definitionsList: functionDefinition definitionsList
                | userDefinedType
                ;
 
-functionDefinition: TK_KEYWORD_FUNC TK_IDENTIFIER '(' functionParametersList ')' TK_ARROW type statementsBlock {FunctionPut($2);}
-                  | TK_KEYWORD_FUNC TK_IDENTIFIER '('')' TK_ARROW type statementsBlock    {FunctionPut($2);}
+functionDefinition: TK_KEYWORD_FUNC TK_IDENTIFIER '(' functionParametersList ')' TK_ARROW typename statementsBlock {FunctionPut($2);}
+                  | TK_KEYWORD_FUNC TK_IDENTIFIER '('')' TK_ARROW typename statementsBlock    {FunctionPut($2);}
                   ;
 
 userDefinedType: TK_KEYWORD_STRUCT TK_TYPEIDENTIFIER TK_BEGIN globalsList TK_END
                ;
 
 
-functionParametersList: type TK_IDENTIFIER ',' functionParametersList
-                      | type TK_IDENTIFIER
+functionParametersList: typename TK_IDENTIFIER ',' functionParametersList
+                      | typename TK_IDENTIFIER
                       ;
 
 functionCallParametersList: expression ',' functionCallParametersList
@@ -109,9 +111,9 @@ statement: varDeclaration
          | TK_KEYWORD_WHILE '(' expression ')' statementsBlock
          ;
 
-type: TK_TYPE
-      | TK_TYPEIDENTIFIER
-      | type '[' TK_LITERAL_INT ']'
+typename: TK_TYPE { $$ = $1; }
+      | TK_TYPEIDENTIFIER { $$ = $1; }
+      | typename '[' TK_LITERAL_INT ']' { $$ = "unimplemented"; }
       ;
 
 literal: TK_LITERAL_BOOL

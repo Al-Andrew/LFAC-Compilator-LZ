@@ -1,18 +1,31 @@
 #ifndef LZ_SYMBOLTABLE_H
 #define LZ_SYMBOLTABLE_H
 
-struct Symbol{
+#include <stdbool.h>
+
+struct VarSymbol{
+    char* name;
+    char* typename;
+    bool is_const;
+
+    struct VarSymbol *next;
+};
+typedef struct VarSymbol VarSymbol;
+
+struct FuncSymbol{
     char* name; 
 
-    struct Symbol *next;
+    struct FuncSymbol *next;
 };
-typedef struct Symbol Symbol;
+typedef struct FuncSymbol FuncSymbol;
 
-Symbol* SymbolPut(char* name);
-Symbol* SymbolGet(char* name);
 
-Symbol* FunctionPut(char* name);
-Symbol* FunctionGet(char* name);
-void PrintSymbols();
+VarSymbol* VarPut(char* name, char* typename, bool is_const);
+VarSymbol* VarGet(char* name);
+
+FuncSymbol* FunctionPut(char* name);
+FuncSymbol* FunctionGet(char* name);
+
+void PrintVars();
 void PrintFunctions();
 #endif
