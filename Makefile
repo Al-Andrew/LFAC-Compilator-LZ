@@ -13,9 +13,6 @@ update: LZ
 zip:
 	zip proiect.zip src/ examples/ Makefile 
 
-run: LZ
-	./build/LZ ./examples/example.lz
-
 folders:
 	-mkdir build 2> /dev/null
 	-mkdir temp 2> /dev/null
