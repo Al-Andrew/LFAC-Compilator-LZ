@@ -40,9 +40,9 @@ extern int yylineno;
 %%
 
 program: globals definitions main {printf("Program corect sintactic\n"); PrintFunctions(); PrintVars(); }
-      | definitions main
-      | globals main
-      | main
+      | definitions main {printf("Program corect sintactic\n"); PrintFunctions(); PrintVars(); }
+      | globals main {printf("Program corect sintactic\n"); PrintFunctions(); PrintVars(); }
+      | main {printf("Program corect sintactic\n"); PrintFunctions(); PrintVars(); }
       ;
 
 globals: TK_BEGIN_GLOBAL globalsList TK_END_GLOBAL { PushStackFrame("global"); } 
@@ -108,7 +108,8 @@ statementsList: statement ';' statementsList
               | statement ';'
               ;
 
-statement: varDeclaration
+statement: ';' // skip
+         | varDeclaration
          | constDeclaration
          | varAssignment
          | expression

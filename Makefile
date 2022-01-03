@@ -4,6 +4,12 @@ LZ: folders lex yac
 clean: 
 	rm -rf build/ temp/ Functions.txt Vars.txt proiect.zip
 
+test: LZ
+	./test.sh
+
+update: LZ
+	./test.sh update
+
 zip:
 	zip proiect.zip src/ examples/ Makefile 
 
