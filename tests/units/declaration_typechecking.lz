@@ -1,0 +1,13 @@
+BEGIN_GLOBAL
+
+Var Int #x;
+Var Int #myint       = 123;
+Var Float #myfloat   = 123.0;
+Var Char #mychar     = '1';
+Var String #mystring = "123";
+Var Bool #mybool     = True;
+END_GLOBAL
+
+BEGIN_MAIN
+;;
+END_MAIN

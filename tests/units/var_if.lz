@@ -1,9 +1,0 @@
-BEGIN_MAIN
-Var Int #outsite;
-
-If ( True )
-BEGIN
-    Var Int #inside;
-END;
-
-END_MAIN
