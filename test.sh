@@ -20,6 +20,10 @@ if [ $# -eq 1 ]; then
 fi
 
 for FILE in $UNITS_PATH/*; do
+    if [ `expr match "$FILE" '\.'` -eq 1 ]; then
+        continue 
+    fi
+
     OFP=$LATEST_PATH/"$(basename "$FILE")"".result"
     EFP=$EXPECTED_PATH/"$(basename "$FILE")"".result"
 
@@ -28,11 +32,18 @@ for FILE in $UNITS_PATH/*; do
     echo "output: " >> $OFP
     ./build/LZ $FILE >> $OFP 2>&1
     echo "------------------" >> $OFP
+    RES=$?
+    echo "code: $RES" >> $OFP
+    echo "------------------" >> $OFP
     echo "functions: " >> $OFP
-    cat Functions.txt >> $OFP
+    if [ $RES -eq 0 ]; then
+        cat Functions.txt >> $OFP
+    fi
     echo "------------------" >> $OFP
     echo "variables: " >> $OFP
+    if [ $RES -eq 0 ]; then
     cat Vars.txt >> $OFP
+    fi
     echo "------------------" >> $OFP
 
     if [ $UPDATE -eq 1 ]; then
