@@ -42,11 +42,11 @@
 #[_a-zA-Z][_a-zA-Z0-9]* { yylval.id = strdup(yytext);  return TK_IDENTIFIER;}
 $[_a-zA-Z][_a-zA-Z0-9]* { yylval.id = strdup(yytext); return TK_TYPEIDENTIFIER;}
 
-"-"?[0-9]+ {return TK_LITERAL_INT;}
-"-"?[0-9]+.[0-9]+ {return TK_LITERAL_FLOAT;}
-"True"|"False" {return TK_LITERAL_BOOL;}
-\'.\' {return TK_LITERAL_CHAR;}
-\".+\" {return TK_LITERAL_STRING;}
+"-"?[0-9]+              {yylval.id = strdup(yytext); return TK_LITERAL_INT;}
+"-"?[0-9]+.[0-9]+       {yylval.id = strdup(yytext); return TK_LITERAL_FLOAT;}
+"True"|"False"          {yylval.id = strdup(yytext); return TK_LITERAL_BOOL;}
+\'.\'                   {yylval.id = strdup(yytext); return TK_LITERAL_CHAR;}
+\".+\"                  {yylval.id = strdup(yytext); return TK_LITERAL_STRING;}
 
 [ \t] ;
 \n {yylineno++;}
