@@ -48,6 +48,6 @@ variables:
     typename: Int
     is_const: false
     stackframe: global_
-    value: (null)
+    value: 31
 }
 ------------------

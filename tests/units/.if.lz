@@ -1,6 +1,0 @@
-BEGIN_MAIN
-If (True)
-BEGIN
-    ;;
-END;
-END_MAIN

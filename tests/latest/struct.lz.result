@@ -1,0 +1,67 @@
+
+------------------
+output: 
+Program corect sintactic
+------------------
+code: 0
+------------------
+functions: 
+------------------
+variables: 
+{
+    name: #p2
+    typename: $Persoana
+    is_const: false
+    stackframe: #Main_
+    value: 
+}
+{
+    name: #Varsta
+    typename: Int
+    is_const: false
+    stackframe: $Persoana_#p2_
+    value: 21
+}
+{
+    name: #Nume
+    typename: String
+    is_const: false
+    stackframe: $Persoana_#p2_
+    value: "Rares"
+}
+{
+    name: #p1
+    typename: $Persoana
+    is_const: false
+    stackframe: #Main_
+    value: 
+}
+{
+    name: #Varsta
+    typename: Int
+    is_const: false
+    stackframe: $Persoana_#p1_
+    value: 20
+}
+{
+    name: #Nume
+    typename: String
+    is_const: false
+    stackframe: $Persoana_#p1_
+    value: "Andrei"
+}
+{
+    name: #Nume
+    typename: String
+    is_const: false
+    stackframe: $Persoana_
+    value: 
+}
+{
+    name: #Varsta
+    typename: Int
+    is_const: false
+    stackframe: $Persoana_
+    value: 
+}
+------------------

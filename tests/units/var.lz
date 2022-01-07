@@ -9,5 +9,5 @@ Var Bool #mybool     = True;
 END_GLOBAL
 
 BEGIN_MAIN
-;;
+#x = 31;
 END_MAIN

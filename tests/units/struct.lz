@@ -1,0 +1,21 @@
+BEGIN_DEFINITIONS
+
+Struct $Persoana 
+BEGIN
+    Var Int #Varsta;
+    Var String #Nume;
+END
+
+END_DEFINITIONS
+
+BEGIN_MAIN
+    Var $Persoana #p1;
+    Var $Persoana #p2;
+
+    #p1.#Nume = "Andrei";
+    #p1.#Varsta = 20;
+
+    #p2.#Nume = "Rares";
+    #p2.#Varsta = 21;
+
+END_MAIN

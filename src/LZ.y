@@ -61,16 +61,18 @@ globalsList:  varDeclaration ';' globalsList
             | constDeclaration ';'
             ;
 
-varDeclaration: TK_KEYWORD_VAR typename TK_IDENTIFIER              { VarPut($3, $2, false, NULL); }
+varDeclaration: TK_KEYWORD_VAR typename TK_IDENTIFIER              { VarPut($3, $2, false, MakeExpression("", $2)); }
             | TK_KEYWORD_VAR typename TK_IDENTIFIER '=' expression { VarPut($3, $2, false, $5  ); }
-            ;                                                      
+            ;
 
 varAssignment: TK_IDENTIFIER '=' expression {
                   VarSymbol* var  = VarGet($1);
                   if( var == NULL ) {
-                        fprintf(stderr, "No such variable exists: %s | line: %d", $1 , yylineno);
+                        fprintf(stderr, "No such variable exists: %s | line: %d\n", $1 , yylineno);
+                        exit(1);
                   } else if ( strcmp(var->typename, $3->typename) != 0 ) {
-                        fprintf(stderr, "Cannot assign expression of type %s to variable of type %s | line: %d", $3->typename, var->typename, yylineno); 
+                        fprintf(stderr, "Cannot assign expression of type %s to variable of type %s | line: %d\n", $3->typename, var->typename, yylineno); 
+                        exit(1);
                   } 
                   VarUpdateValue(var, $3);
              }
@@ -78,7 +80,14 @@ varAssignment: TK_IDENTIFIER '=' expression {
                    //TODO
              }
              | TK_IDENTIFIER '.' TK_IDENTIFIER '=' expression {
-                  VarSymbol* var = VarGetMember($3, $1);
+                  VarSymbol* parent_struct = VarGet($1);
+                  VarSymbol* var = VarGetMember($3, parent_struct);
+
+                  if( var == NULL ) {
+                        fprintf(stderr, "No member %s::%s found | line: %d\n", parent_struct->typename, $3 , yylineno);
+                        exit(1);
+                  } //FIXME TODO: TYPECHECKING
+
                   VarUpdateValue(var, $5);
              }
              ;
@@ -182,7 +191,7 @@ expression: literal {
           | TK_IDENTIFIER { 
                   VarSymbol* var = VarGet($1); 
                   if(var == NULL) { 
-                        fprintf(stderr, "No such variable exists: %s, line: %d", $1, yylineno); 
+                        fprintf(stderr, "No such variable exists: %s | line: %d\n", $1, yylineno); 
                         exit(1);
                   }
                   $$ = MakeExpression($1, var->typename); 
@@ -190,12 +199,12 @@ expression: literal {
           | TK_IDENTIFIER '.' TK_IDENTIFIER {
                   VarSymbol* var = VarGet($1); 
                   if(var == NULL) { 
-                        fprintf(stderr, "No such ud variable exists: %s, line: %d", $1, yylineno); 
+                        fprintf(stderr, "No such ud variable exists: %s | line: %d\n", $1, yylineno); 
                         exit(1);
                   }
                   VarSymbol* member = VarGet($3);
                   if(member == NULL || (strncmp($1, member->stackframe, strlen($1)) == 0) ) { //daca apartine structului sau nu
-                        fprintf(stderr, "No such ud variable %s has no member %s, line: %d", $1, $3, yylineno); 
+                        fprintf(stderr, "No such ud variable %s has no member %s, line: %d\n", $1, $3, yylineno); 
                         exit(1);
                   }
                   int len = strlen($1) + strlen($3) + 2;
@@ -210,13 +219,13 @@ expression: literal {
           | TK_IDENTIFIER '[' TK_LITERAL_INT ']' {
                   VarSymbol* var = VarGet($1); 
                   if(var == NULL) { 
-                        fprintf(stderr, "No such ud variable exists: %s, line: %d", $1, yylineno); 
+                        fprintf(stderr, "No such ud variable exists: %s, line: %d\n", $1, yylineno); 
                         exit(1);
                   }
                   char buff[64];
                   sprintf(buff, "%.*s", (int)(strchr(var->typename,']') - strchr(var->typename,'[') - 1), strchr(var->typename,'[') + 1);
                   if( atoi($3) >= atoi(buff) ) {
-                        fprintf(stderr, "Cannot acces element %s of %s:%s | line: %d", $3, var->name,var->typename, yylineno); 
+                        fprintf(stderr, "Cannot acces element %s of %s:%s | line: %d\n", $3, var->name,var->typename, yylineno); 
                         exit(1);
                   }
                   int len = strlen($1) + strlen($3) + 3;

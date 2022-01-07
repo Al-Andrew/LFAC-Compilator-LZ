@@ -1,8 +1,0 @@
-BEGIN_MAIN
-Var Int #outside;
-    If ( True )
-    BEGIN
-        Var Int #inside;
-    END;
-Var Int #after;
-END_MAIN

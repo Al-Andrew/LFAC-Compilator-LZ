@@ -57,7 +57,11 @@ Expression* MergeExpression(Expression* t1, Expression* t2, char* op) {
 
 void PushStackFrame(char* frame) {
     VarSymbol* curr = VarsTable;
-    while( curr != NULL && curr->stackframe[0] == 0 ) { 
+    while( curr != NULL ) { 
+        if( curr->stackframe[0] != 0 ) {
+            curr = curr->next;
+            continue;
+        }
         strcat(curr->stackframe, frame);
         strcat(curr->stackframe, "_");
         curr = curr->next;
@@ -67,11 +71,26 @@ void PushStackFrame(char* frame) {
 VarSymbol* VarPut(char* name, char* typename, bool is_const, Expression* value) {
     VarSymbol* ret = malloc(sizeof(VarSymbol));
 
-
     ret->name = malloc (strlen(name)+1);
     strcpy(ret->name, name);
+
     ret->typename = malloc (strlen(typename)+1);
     strcpy(ret->typename, typename);
+
+    if( ret->typename[0] == '$' ) {
+        VarSymbol* curr;
+        for (curr = VarsTable; curr != NULL; curr = curr->next) {
+            if(strncmp(curr->stackframe, typename, strlen(typename)) == 0 ) {
+                if( strlen(curr->stackframe) == strlen(typename) + 1 ) {
+                    VarSymbol* latest = VarPut(curr->name, curr->typename, curr->is_const, MakeExpression(curr->value, curr->typename));
+                    strcat(latest->stackframe, curr->stackframe);
+                    strcat(latest->stackframe, name);
+                    strcat(latest->stackframe, "_");
+                }
+            }
+        }
+    }
+
 
     ret->is_const = is_const;
 
@@ -102,11 +121,16 @@ VarSymbol* VarGet(char* name) {
     return NULL;
 }
 
-VarSymbol* VarGetMember(char* name, char* st) {
+VarSymbol* VarGetMember(char* name, VarSymbol* parent_struct) {
     VarSymbol* ret;
     for (ret = VarsTable; ret != NULL; ret = ret->next)
-        if ((strcmp (ret->name,name) == 0) && (strncmp(ret->stackframe, st, strlen(st) == 0)))
-            return ret;
+        if ((strcmp (ret->name,name) == 0)) {
+            if (strncmp(ret->stackframe, parent_struct->typename, strlen(parent_struct->typename)) == 0)
+                if ( strncmp(ret->stackframe + strlen(parent_struct->typename) + 1,
+                 parent_struct->name, strlen(parent_struct->name)) == 0 )
+
+                    return ret;
+        }
     return NULL;
 }
 
