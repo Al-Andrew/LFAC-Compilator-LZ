@@ -6,6 +6,7 @@
 
 VarSymbol* VarsTable = NULL;
 FuncSymbol* FunctionsTable = NULL;
+VarSymbol* FunctionParamList = NULL;
 
 /**========================================================================
  *                           SECTION VarSymbol Functions
@@ -152,9 +153,24 @@ void PrintVars() {
  *                           SECTION FuncSymbol Functions
  *========================================================================**/
 
-FuncSymbol* FunctionPut(char* name, char* return_type, char* parameters) {
+VarSymbol* PutFunctionParameter(char* name, char* typename) {
+    VarSymbol* ret = malloc(sizeof(VarSymbol));
+
+    ret->name = malloc (strlen(name)+1);
+    strcpy(ret->name, name);
+
+    ret->typename = malloc(strlen(typename) + 1);
+    strcpy(ret->typename, typename);
+
+    ret->next = FunctionParamList;
+    FunctionParamList = ret;
+    return ret;
+}
+
+FuncSymbol* FunctionPut(char* name, char* return_type) {
     FuncSymbol* ret = malloc(sizeof(FuncSymbol));
-    strcat(ret->parameters, parameters);
+    ret->parameters = FunctionParamList;
+    FunctionParamList = NULL;
 
     ret->name = malloc (strlen(name)+1);
     strcpy(ret->name, name);
@@ -179,10 +195,9 @@ void PrintFunctions() {
     FuncSymbol* current = FunctionsTable;
     FILE* out = fopen("Functions.txt", "w");
     while(current != NULL ) {
-        fprintf(out, "{\n    name: %s\n    return_type: %s\n    parameters: %s\n}\n", 
+        fprintf(out, "{\n    name: %s\n    return_type: %s\n}\n", 
                 current->name,
-                current->return_type,
-                current->parameters);
+                current->return_type);
         current = current->next;
     }
 }

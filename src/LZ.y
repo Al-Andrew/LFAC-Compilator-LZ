@@ -27,7 +27,6 @@ extern int yylineno;
 
 
 %type <id>typename
-%type <id>functionDefinition
 %type <id>functionParametersList
 %type <id> varDeclaration
 %type <id> constDeclaration
@@ -65,7 +64,7 @@ varDeclaration: TK_KEYWORD_VAR typename TK_IDENTIFIER              { VarPut($3, 
             | TK_KEYWORD_VAR typename TK_IDENTIFIER '=' expression { VarPut($3, $2, false, $5  ); }
             ;
 
-varAssignment: TK_IDENTIFIER '=' expression {
+varAssignment: TK_IDENTIFIER '=' expression { //FIXME TODO: CHECK FOR CONST
                   VarSymbol* var  = VarGet($1);
                   if( var == NULL ) {
                         fprintf(stderr, "No such variable exists: %s | line: %d\n", $1 , yylineno);
@@ -104,8 +103,11 @@ definitionsList: functionDefinition definitionsList
                | userDefinedType
                ;
 
-functionDefinition: TK_KEYWORD_FUNC TK_IDENTIFIER '(' functionParametersList ')' TK_ARROW typename statementsBlock { PushStackFrame($2); FunctionPut($2, $7, $4); }
-                  | TK_KEYWORD_FUNC TK_IDENTIFIER '('')' TK_ARROW typename statementsBlock    { PushStackFrame($2); FunctionPut($2, $6, " "); }
+functionSignature: TK_KEYWORD_FUNC TK_IDENTIFIER '(' functionParametersList ')' TK_ARROW typename { VarPut("#Return", $7, false, MakeExpression("", $7)); PushStackFrame($2); FunctionPut($2, $7); }
+                  | TK_KEYWORD_FUNC TK_IDENTIFIER '('')' TK_ARROW typename { VarPut("#Return", $6, false, MakeExpression("", $6)); PushStackFrame($2); FunctionPut($2, $6); }
+                  ;
+
+functionDefinition: functionSignature statementsBlock 
                   ;
 
 userDefinedType: TK_KEYWORD_STRUCT TK_TYPEIDENTIFIER TK_BEGIN udVarList TK_END { PushStackFrame($2); }
@@ -118,23 +120,11 @@ udVarList: varDeclaration ';' udVarList
          ;
 
 
-functionParametersList: typename TK_IDENTIFIER ',' functionParametersList {char* s = (char*)malloc(strlen($1) + strlen($2) + strlen($4) + 4);
-                                                                              strcpy(s, $1);
-                                                                              strcat(s, " ");
-                                                                              strcat(s, $2);
-                                                                              strcat(s, " ");
-                                                                              strcat(s, $4);
-                                                                              strcat(s, " ");
-                                                                              $$ = s;}
-                      | typename TK_IDENTIFIER {char* s = (char*)malloc(strlen($1) + strlen($2) +3);
-                                                                              strcpy(s, $1);
-                                                                              strcat(s, " ");
-                                                                              strcat(s, $2);
-                                                                              strcat(s, " ");
-                                                                              $$ = s;}
+functionParametersList: typename TK_IDENTIFIER ',' functionParametersList { VarPut($2, $1, false, MakeExpression("", $1)); PutFunctionParameter($2, $1); }
+                      | typename TK_IDENTIFIER { VarPut($2, $1, false, MakeExpression("", $1)); PutFunctionParameter($2, $1); }
                       ;
 
-functionCallParametersList: expression ',' functionCallParametersList //de implementat
+functionCallParametersList: expression ',' functionCallParametersList //TODO
                           | expression
                           ;
 
@@ -178,7 +168,7 @@ literal: TK_LITERAL_BOOL {$$ = $1;}
        | TK_LITERAL_FLOAT {$$ = $1;}
        | TK_LITERAL_INT {$$ = $1;}
        | TK_LITERAL_STRING {$$ = $1;}
-       | '{' literalsList '}' {$$ = "unimplemented";}//de implementat
+       | '{' literalsList '}' {$$ = "unimplemented";}//de implementat //ANCHOR - WTF IS THIS FOR?
        ;
 
 literalsList: literal //de implementat {$$ = $1;}

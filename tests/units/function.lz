@@ -1,0 +1,17 @@
+BEGIN_DEFINITIONS
+
+Func #GradeConv(Char #arg2) -> Int
+BEGIN
+    If ( #arg2 == 'A' )
+    BEGIN
+        #Return = 10;
+    END Else BEGIN
+        #Return =  9;
+    END;
+END
+
+END_DEFINITIONS
+BEGIN_MAIN
+    Var Char #mygrade = 'B';
+    Var Char #score = #GradeConv(#mygrade);
+END_MAIN

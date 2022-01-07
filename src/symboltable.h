@@ -19,7 +19,7 @@ typedef struct VarSymbol VarSymbol;
 struct FuncSymbol{
     char* name; 
     char* return_type;
-    char parameters[10001];
+    VarSymbol* parameters;
     struct FuncSymbol *next;
 };
 typedef struct FuncSymbol FuncSymbol;
@@ -40,8 +40,9 @@ VarSymbol* VarPut(char* name, char* typename, bool is_const, Expression* valoare
 VarSymbol* VarGet(char* name);
 VarSymbol* VarGetMember(char* name, VarSymbol* parent_struct);
 
-FuncSymbol* FunctionPut(char* name, char* return_type, char* parameters);
+FuncSymbol* FunctionPut(char* name, char* return_type);
 FuncSymbol* FunctionGet(char* name);
+VarSymbol* PutFunctionParameter(char* name, char* typename);
 
 Expression* MakeExpression(char* text, char* typename);
 Expression* MergeExpression(Expression* t1, Expression* t2, char* op);
@@ -51,4 +52,5 @@ void PrintFunctions();
 
 extern VarSymbol* VarsTable;
 extern FuncSymbol* FunctionsTable;
+extern VarSymbol* FunctionParamList;
 #endif
