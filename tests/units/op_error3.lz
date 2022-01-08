@@ -1,0 +1,5 @@
+BEGIN_MAIN
+
+('h' >= 'a');
+
+END_MAIN

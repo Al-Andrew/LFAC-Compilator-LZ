@@ -1,0 +1,5 @@
+BEGIN_MAIN
+
+(True && 1);
+
+END_MAIN

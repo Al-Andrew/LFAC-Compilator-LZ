@@ -213,7 +213,40 @@ Expression* MergeExpression(Expression* t1, Expression* t2, char* op) {
     strcat(ret->text, op);
     strcat(ret->text, " ");
     strcat(ret->text, t2->text);
-    //FIXME TODO: TYPECHECKING
+    
+    if( strchr( "+-/*", op[0]) != NULL ) {
+        if( strcmp(t1->typename, t2->typename) != 0 ) {
+            fprintf(stderr, "Could not apply operator %s on %s and %s\n", op, t1->typename, t2->typename);
+            exit(1);
+        }
+        if( (strcmp(t1->typename, "Int") != 0) && (strcmp(t1->typename, "Float") != 0) ) {
+            fprintf(stderr, "Could not apply operator %s on %s and %s\n", op, t1->typename, t2->typename);
+            exit(1);
+        }
+    } else if ( (strcmp(op, "==") == 0) || (strcmp(op, "!=") == 0) ) {
+        if( strcmp(t1->typename, t2->typename) != 0 ) {
+            fprintf(stderr, "Could not apply operator %s on %s and %s\n", op, t1->typename, t2->typename);
+            exit(1);
+        }
+    } else if( (strcmp(op, ">=") == 0) || (strcmp(op, ">") == 0) || (strcmp(op, "<=") == 0) || (strcmp(op, "<") == 0)) {
+        if( strcmp(t1->typename, t2->typename) != 0 ) {
+            fprintf(stderr, "Could not apply operator %s on %s and %s\n", op, t1->typename, t2->typename);
+            exit(1);
+        }
+        if( (strcmp(t1->typename, "Int") != 0) && (strcmp(t1->typename, "Float") != 0) ) {
+            fprintf(stderr, "Could not apply operator %s on %s and %s\n", op, t1->typename, t2->typename);
+            exit(1);
+        }
+    } else if( (strcmp(op, "&&") == 0) || (strcmp(op, "||") == 0) || (strcmp(op, "!") == 0) ) {
+        if( strcmp(t1->typename, t2->typename) != 0 ) {
+            fprintf(stderr, "Could not apply operator %s on %s and %s\n", op, t1->typename, t2->typename);
+            exit(1);
+        }
+        if( (strcmp(t1->typename, "Bool") != 0) ) {
+            fprintf(stderr, "Could not apply operator %s on %s and %s\n", op, t1->typename, t2->typename);
+            exit(1);
+        }
+    }
 
     ret->typename = malloc(strlen(t1->typename) + 1);
     strcpy(ret->typename, t1->typename);
