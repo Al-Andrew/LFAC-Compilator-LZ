@@ -163,7 +163,7 @@ char* ASTeval(ASTnode* root) {
             char* left = ASTeval(root->left);
             char* right = ASTeval(root->right);
             
-            return (strcmp(left, "Flase") == 0)?"False":right;
+            return (strcmp(left, "False") == 0)?"False":right;
         } else if( strcmp(root->text, "||") == 0 ) { 
             char* left = ASTeval(root->left);
             char* right = ASTeval(root->right);
@@ -172,7 +172,7 @@ char* ASTeval(ASTnode* root) {
         } else if( strcmp(root->text, "!") == 0 ) {
             char* right = ASTeval(root->right);
 
-            return (strcmp(right, "True") == 0)?"True":"False";
+            return (strcmp(right, "True") == 0)?"False":"True";
         }
 
         break;

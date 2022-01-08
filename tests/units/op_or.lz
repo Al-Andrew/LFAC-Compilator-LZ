@@ -1,0 +1,8 @@
+BEGIN_MAIN
+
+Var Bool #ff = False || False;
+Var Bool #ft = False || True;
+Var Bool #tf = True || False;
+Var Bool #tt = True || True;
+
+END_MAIN

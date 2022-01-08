@@ -1,0 +1,7 @@
+BEGIN_MAIN
+
+Var Bool #f = ! False;
+Var Bool #t = ! True;
+
+
+END_MAIN

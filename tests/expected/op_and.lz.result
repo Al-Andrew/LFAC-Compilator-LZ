@@ -1,0 +1,39 @@
+
+------------------
+output: 
+Program corect sintactic
+------------------
+code: 0
+------------------
+functions: 
+------------------
+variables: 
+{
+    name: #tt
+    typename: Bool
+    is_const: false
+    stackframe: #Main_
+    value: True
+}
+{
+    name: #tf
+    typename: Bool
+    is_const: false
+    stackframe: #Main_
+    value: False
+}
+{
+    name: #ft
+    typename: Bool
+    is_const: false
+    stackframe: #Main_
+    value: False
+}
+{
+    name: #ff
+    typename: Bool
+    is_const: false
+    stackframe: #Main_
+    value: False
+}
+------------------
