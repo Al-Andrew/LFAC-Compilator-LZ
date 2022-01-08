@@ -1,0 +1,11 @@
+
+------------------
+output: 
+Could not apply operator && on Bool and Int
+------------------
+code: 1
+------------------
+functions: 
+------------------
+variables: 
+------------------
