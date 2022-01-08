@@ -1,0 +1,18 @@
+
+------------------
+output: 
+Program corect sintactic
+------------------
+code: 0
+------------------
+functions: 
+------------------
+variables: 
+{
+    name: #mol
+    typename: Int
+    is_const: true
+    stackframe: #Main_
+    value: 42
+}
+------------------

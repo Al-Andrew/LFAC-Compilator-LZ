@@ -64,7 +64,7 @@ varDeclaration: TK_KEYWORD_VAR typename TK_IDENTIFIER              { VarPut($3, 
             | TK_KEYWORD_VAR typename TK_IDENTIFIER '=' expression { VarPut($3, $2, false, $5  ); }
             ;
 
-varAssignment: TK_IDENTIFIER '=' expression { //FIXME TODO: CHECK FOR CONST
+varAssignment: TK_IDENTIFIER '=' expression {
                   VarSymbol* var  = VarGet($1);
                   if( var == NULL ) {
                         fprintf(stderr, "No such variable exists: %s | line: %d\n", $1 , yylineno);
@@ -73,7 +73,8 @@ varAssignment: TK_IDENTIFIER '=' expression { //FIXME TODO: CHECK FOR CONST
                         fprintf(stderr, "Cannot assign expression of type %s to variable of type %s | line: %d\n", $3->typename, var->typename, yylineno); 
                         exit(1);
                   } else if ( var->is_const == true) {
-                        fprintf(stderr, "Cannot change value of const %s | line: %d", var->name, yylineno);
+                        fprintf(stderr, "Cannot change value of const %s | line: %d\n", var->name, yylineno);
+                        exit(1);
                   }     
                   VarUpdateValue(var, $3);
              }

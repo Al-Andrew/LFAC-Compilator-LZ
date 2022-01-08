@@ -1,0 +1,5 @@
+BEGIN_MAIN
+
+Const Int #mol = 42;
+
+END_MAIN
