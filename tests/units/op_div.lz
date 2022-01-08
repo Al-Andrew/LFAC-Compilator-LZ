@@ -1,0 +1,9 @@
+BEGIN_MAIN
+
+Var Int #x;
+#x = 8 / 2;
+
+Var Float #y;
+#y = 15.0 / 4.0;
+
+END_MAIN

@@ -71,7 +71,7 @@ char* ASTeval(ASTnode* root) {
 
         if( strcmp(root->text, "+") == 0 ) {
             char* left = ASTeval(root->left);
-            char* right = ASTeval(root->left);
+            char* right = ASTeval(root->right);
             double left_val = atof(left);
             double right_val = atof(right);
             double res_val = left_val + right_val;
@@ -83,11 +83,44 @@ char* ASTeval(ASTnode* root) {
             }
             return res;
         } else if( strcmp(root->text, "-") == 0 ) {
-
+            char* left = ASTeval(root->left);
+            char* right = ASTeval(root->right);
+            double left_val = atof(left);
+            double right_val = atof(right);
+            double res_val = left_val - right_val;
+            char *res = malloc(strlen(left) + 3);
+            if( strcmp(root->left->typename, "Int") == 0 ) {
+                sprintf(res, "%d", (int)res_val);
+            } else {
+                sprintf(res, "%f", (float)res_val);
+            }
+            return res;
         } else if( strcmp(root->text, "/") == 0 ) {
-
+            char* left = ASTeval(root->left);
+            char* right = ASTeval(root->right);
+            double left_val = atof(left);
+            double right_val = atof(right);
+            double res_val = left_val / right_val;
+            char *res = malloc(strlen(left) + 3);
+            if( strcmp(root->left->typename, "Int") == 0 ) {
+                sprintf(res, "%d", (int)res_val);
+            } else {
+                sprintf(res, "%f", (float)res_val);
+            }
+            return res;
         } else if( strcmp(root->text, "*") == 0 ) {
-
+            char* left = ASTeval(root->left);
+            char* right = ASTeval(root->right);
+            double left_val = atof(left);
+            double right_val = atof(right);
+            double res_val = left_val * right_val;
+            char *res = malloc(strlen(left) + 3);
+            if( strcmp(root->left->typename, "Int") == 0 ) {
+                sprintf(res, "%d", (int)res_val);
+            } else {
+                sprintf(res, "%f", (float)res_val);
+            }
+            return res;
         }
         break;
     }
