@@ -60,8 +60,24 @@ globalsList:  varDeclaration ';' globalsList
             | constDeclaration ';'
             ;
 
-varDeclaration: TK_KEYWORD_VAR typename TK_IDENTIFIER              { VarPut($3, $2, false, MakeExpression("", $2)); } //TODO make shure no other var with same name already exists (in scope???)
-            | TK_KEYWORD_VAR typename TK_IDENTIFIER '=' expression { VarPut($3, $2, false, $5  ); } 
+varDeclaration: TK_KEYWORD_VAR typename TK_IDENTIFIER {
+                  VarSymbol* var = VarGet($3);
+
+                  if( var != NULL ) {
+                        fprintf(stderr, "Identifier %s already defined | line: %d\n", $3, yylineno);
+                        exit(1);
+                  }
+                  VarPut($3, $2, false, MakeExpression("", $2)); 
+            }
+            | TK_KEYWORD_VAR typename TK_IDENTIFIER '=' expression {
+                  VarSymbol* var = VarGet($3);
+
+                  if( var != NULL ) {
+                        fprintf(stderr, "Identifier %s already defined | line: %d\n", $3, yylineno);
+                        exit(1);
+                  }
+                  VarPut($3, $2, false, $5); 
+            }
             ;
 
 varAssignment: TK_IDENTIFIER '=' expression {

@@ -1,0 +1,6 @@
+BEGIN_GLOBAL
+
+Var Int #x = 5;
+Var Int #x;
+
+BEGIN_MAIN
