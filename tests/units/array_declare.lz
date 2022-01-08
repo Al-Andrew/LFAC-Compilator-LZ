@@ -1,0 +1,5 @@
+BEGIN_MAIN
+
+Var Int[5] #myarray;
+
+END_MAIN

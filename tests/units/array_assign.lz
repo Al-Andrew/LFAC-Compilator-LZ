@@ -1,0 +1,11 @@
+BEGIN_MAIN
+
+Var Int[5] #myarray;
+
+#myarray[0] = 3;
+#myarray[1] = 2;
+#myarray[2] = 1;
+#myarray[3] = 0;
+#myarray[4] = -1;
+
+END_MAIN

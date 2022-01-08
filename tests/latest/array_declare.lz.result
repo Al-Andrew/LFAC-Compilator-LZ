@@ -1,0 +1,53 @@
+
+------------------
+output: 
+Program corect sintactic
+------------------
+code: 0
+------------------
+functions: 
+------------------
+variables: 
+{
+    name: #myarray
+    typename: Int[5]
+    is_const: false
+    stackframe: #Main_
+    value: (null)
+}
+{
+    name: #myarray[4]
+    typename: Int
+    is_const: false
+    stackframe: #Main_
+    value: (null)
+}
+{
+    name: #myarray[3]
+    typename: Int
+    is_const: false
+    stackframe: #Main_
+    value: (null)
+}
+{
+    name: #myarray[2]
+    typename: Int
+    is_const: false
+    stackframe: #Main_
+    value: (null)
+}
+{
+    name: #myarray[1]
+    typename: Int
+    is_const: false
+    stackframe: #Main_
+    value: (null)
+}
+{
+    name: #myarray[0]
+    typename: Int
+    is_const: false
+    stackframe: #Main_
+    value: (null)
+}
+------------------

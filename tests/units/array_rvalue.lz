@@ -1,0 +1,9 @@
+BEGIN_MAIN
+
+Var Int[5] #myarray;
+
+#myarray[0] = 3;
+
+Var Int #mynum = #myarray[0];
+
+END_MAIN

@@ -76,7 +76,32 @@ varAssignment: TK_IDENTIFIER '=' expression { //FIXME TODO: CHECK FOR CONST
                   VarUpdateValue(var, $3);
              }
              | TK_IDENTIFIER '[' TK_LITERAL_INT ']' '=' expression {
-                   //TODO
+                  VarSymbol* array = VarGet($1);
+                  
+                  if( array == NULL ) {
+                        fprintf(stderr, "No such variable exists: %s | line: %d\n", $1 , yylineno);
+                        exit(1);
+                  }
+
+                  int len = strlen($1) + strlen($3) + 3;
+                  char* freeMe = malloc(len);
+                  bzero(freeMe, len);
+                  strcat(freeMe, $1);
+                  strcat(freeMe, "[");
+                  strcat(freeMe, $3);
+                  strcat(freeMe, "]");
+
+                  VarSymbol* elem = VarGet(freeMe);
+
+                  if( elem == NULL ) {
+                        fprintf(stderr, "Could not find element %s of %s | line : %d", $3, $1, yylineno);
+                  } else if ( strcmp(elem->typename, $6->typename) != 0 ) {
+                        fprintf(stderr, "Cannot assign expression of type %s to variable of type %s | line: %d\n", $6->typename, elem->typename, yylineno); 
+                        exit(1);
+                  }
+
+                  free(freeMe);
+                  VarUpdateValue(elem, $6);
              }
              | TK_IDENTIFIER '.' TK_IDENTIFIER '=' expression {
                   VarSymbol* parent_struct = VarGet($1);
@@ -160,7 +185,7 @@ typename: TK_TYPE { $$ = $1; }
             strcat(freeMe, $3);
             strcat(freeMe, "]");
             $$ = freeMe;
-      } // TODO: Arrays
+      }
       ;
 
 literal: TK_LITERAL_BOOL {$$ = $1;}

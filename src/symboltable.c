@@ -61,8 +61,11 @@ char* ASTeval(ASTnode* root) {
         return var->value;
         }
         break;
-    case AST_ARRAY_ACCESS:
-        return "0"; //TODO: implement arrays pls
+    case AST_ARRAY_ACCESS: {
+        VarSymbol* elem = VarGet(root->text);
+
+        return elem->value;
+        }
         break;
     case AST_FUNCTION_CALL:
         return "0";
@@ -243,7 +246,7 @@ VarSymbol* VarPut(char* name, char* typename, bool is_const, Expression* value) 
     ret->typename = malloc (strlen(typename)+1);
     strcpy(ret->typename, typename);
 
-    if( ret->typename[0] == '$' ) {
+    if( ret->typename[0] == '$' ) { //Add Struct members to the var table
         VarSymbol* curr;
         for (curr = VarsTable; curr != NULL; curr = curr->next) {
             if(strncmp(curr->stackframe, typename, strlen(typename)) == 0 ) {
@@ -256,7 +259,21 @@ VarSymbol* VarPut(char* name, char* typename, bool is_const, Expression* value) 
                 }
             }
         }
+    } else if ( strchr(typename, '[') != NULL ) { //Add array elements to the var table
+        char buff[64]; //FIXME this assumes that var has the array type :PPP
+        sprintf(buff, "%.*s", (int)(strchr(ret->typename,']') - strchr(ret->typename,'[') - 1), strchr(ret->typename,'[') + 1);
+        int size = atoi(buff);
+        char namebuff[256];
+        char typenamebuff[256];
+        sprintf(typenamebuff, "%.*s", (int)(strchr(ret->typename,'[') - ret->typename),ret->typename);
+
+        for(int i = 0 ; i < size ; ++i ) {
+            sprintf(namebuff, "%s[%d]", name, i);
+            VarPut(namebuff, typenamebuff, false, MakeExpression("", typenamebuff));
+            bzero(namebuff, 256);
+        }
     }
+
 
 
     ret->is_const = is_const;
