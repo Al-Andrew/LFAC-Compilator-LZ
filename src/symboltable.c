@@ -69,7 +69,7 @@ char* ASTeval(ASTnode* root) {
         break;
     case AST_OPERAND: {
 
-        if( strcmp(root->text, "+") == 0 ) {
+        if( strcmp(root->text, "+") == 0 ) {   //ANCHOR Arithmetics
             char* left = ASTeval(root->left);
             char* right = ASTeval(root->right);
             double left_val = atof(left);
@@ -121,7 +121,60 @@ char* ASTeval(ASTnode* root) {
                 sprintf(res, "%f", (float)res_val);
             }
             return res;
+        } else if( strcmp(root->text, "==") == 0 ) {           //ANCHOR comparison
+            char* left = ASTeval(root->left);
+            char* right = ASTeval(root->right);
+
+            return (strcmp(left, right) == 0)?"True":"False";
+        } else if( strcmp(root->text, "!=") == 0 ) {
+            char* left = ASTeval(root->left);
+            char* right = ASTeval(root->right);
+
+            return (strcmp(left, right) == 0)?"False":"True";
+        } else if( strcmp(root->text, ">=") == 0 ) {
+            char* left = ASTeval(root->left);
+            char* right = ASTeval(root->right);
+            double left_val = atof(left);
+            double right_val = atof(right);
+            bool res_val = left_val >= right_val;
+            return res_val?"True":"False";
+        } else if( strcmp(root->text, ">") == 0 ) {
+            char* left = ASTeval(root->left);
+            char* right = ASTeval(root->right);
+            double left_val = atof(left);
+            double right_val = atof(right);
+            bool res_val = left_val > right_val;
+            return res_val?"True":"False";
+        } else if( strcmp(root->text, "<=") == 0 ) {
+            char* left = ASTeval(root->left);
+            char* right = ASTeval(root->right);
+            double left_val = atof(left);
+            double right_val = atof(right);
+            bool res_val = left_val <= right_val;
+            return res_val?"True":"False";
+        } else if( strcmp(root->text, "<") == 0 ) {
+            char* left = ASTeval(root->left);
+            char* right = ASTeval(root->right);
+            double left_val = atof(left);
+            double right_val = atof(right);
+            bool res_val = left_val < right_val;
+            return res_val?"True":"False";
+        } else if( strcmp(root->text, "&&") == 0 ) { //ANCHOR Boolean
+            char* left = ASTeval(root->left);
+            char* right = ASTeval(root->right);
+            
+            return (strcmp(left, "Flase") == 0)?"False":right;
+        } else if( strcmp(root->text, "||") == 0 ) { 
+            char* left = ASTeval(root->left);
+            char* right = ASTeval(root->right);
+            
+            return (strcmp(left, "True") == 0)?"True":right;
+        } else if( strcmp(root->text, "!") == 0 ) {
+            char* right = ASTeval(root->right);
+
+            return (strcmp(right, "True") == 0)?"True":"False";
         }
+
         break;
     }
     default:
