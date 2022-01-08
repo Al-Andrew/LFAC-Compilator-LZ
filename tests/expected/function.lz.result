@@ -1,0 +1,43 @@
+
+------------------
+output: 
+Program corect sintactic
+------------------
+code: 0
+------------------
+functions: 
+{
+    name: #GradeConv
+    return_type: Int
+}
+------------------
+variables: 
+{
+    name: #score
+    typename: Char
+    is_const: false
+    stackframe: #Main_
+    value: unimplemented
+}
+{
+    name: #mygrade
+    typename: Char
+    is_const: false
+    stackframe: #Main_
+    value: 'B'
+}
+{
+    name: #Return
+    typename: Int
+    is_const: false
+    stackframe: #GradeConv_
+    value: 9
+}
+{
+    name: #arg2
+    typename: Char
+    is_const: false
+    stackframe: #GradeConv_
+    value: 
+}
+------------------
