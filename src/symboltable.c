@@ -424,13 +424,39 @@ FuncSymbol* FunctionGet(char* name) {
     return NULL;
 }
 
+FuncSymbol* FunctionGetOverload(char* name) {
+    FuncSymbol* ret;
+    bool diff = false;
+    for (ret = FunctionsTable; ret != NULL; ret = ret->next)
+        if (strcmp (ret->name,name) == 0) {
+            VarSymbol* c1;
+            VarSymbol* c2;
+            for (c1 = FunctionParamList, c2 = ret->parameters; (c1 != NULL) && (c2 != NULL); c1 = c1->next, c2 = c2->next) {
+                if ( strncmp( c1->typename,c2->typename, strlen(c1->typename)) == 0 )
+                    continue; 
+                else {
+                    diff = true;
+                    break;
+                }
+            }
+            if(!diff) { return ret; };
+        }
+    return NULL;
+}
+
 void PrintFunctions() {
     FuncSymbol* current = FunctionsTable;
     FILE* out = fopen("Functions.txt", "w");
     while(current != NULL ) {
-        fprintf(out, "{\n    name: %s\n    return_type: %s\n}\n", 
+        fprintf(out, "{\n    name: %s\n    return_type: %s\n    params: ", 
                 current->name,
                 current->return_type);
+        for(VarSymbol* curr = current->parameters ; curr != NULL ; curr = curr->next ) {
+            fprintf(out, "%s ", curr->typename );
+        }
+        fprintf(out, "\n}\n");
+
+
         current = current->next;
     }
 }

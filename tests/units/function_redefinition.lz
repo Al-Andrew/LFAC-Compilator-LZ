@@ -1,0 +1,16 @@
+BEGIN_DEFINITIONS
+
+Func #myfunc(Int #a, Int #b) -> Int
+BEGIN
+    #Return = 0;
+END
+Func #myfunc(Int #a, Int #b) -> Int 
+BEGIN
+    #Return = 0;
+END
+
+END_DEFINITIONS
+
+BEGIN_MAIN
+;;
+END_MAIN

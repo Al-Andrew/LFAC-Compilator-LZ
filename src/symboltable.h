@@ -65,6 +65,7 @@ VarSymbol* VarGetMember(char* name, VarSymbol* parent_struct);
 
 FuncSymbol* FunctionPut(char* name, char* return_type);
 FuncSymbol* FunctionGet(char* name);
+FuncSymbol* FunctionGetOverload(char* name);
 VarSymbol* PutFunctionParameter(char* name, char* typename);
 
 Expression* MakeExpression(char* text, char* typename);

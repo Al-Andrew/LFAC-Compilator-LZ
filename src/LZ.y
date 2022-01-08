@@ -162,11 +162,33 @@ definitionsList: functionDefinition definitionsList
                | userDefinedType
                ;
 
-functionSignature: TK_KEYWORD_FUNC TK_IDENTIFIER '(' functionParametersList ')' TK_ARROW typename { VarPut("#Return", $7, false, MakeExpression("", $7)); PushStackFrame($2); FunctionPut($2, $7); }
-                  | TK_KEYWORD_FUNC TK_IDENTIFIER '('')' TK_ARROW typename { VarPut("#Return", $6, false, MakeExpression("", $6)); PushStackFrame($2); FunctionPut($2, $6); }
+functionSignature: TK_KEYWORD_FUNC TK_IDENTIFIER '(' functionParametersList ')' TK_ARROW typename { 
+                        VarPut("#Return", $7, false, MakeExpression("", $7));
+                        PushStackFrame($2);
+                        FuncSymbol* func = FunctionGetOverload($2);
+
+                        if( func != NULL ) {
+                              fprintf(stderr, "Function with identifier %s and parameter list already defined | line: %d\n", $2, yylineno);
+                              exit(1);
+                        }
+
+                        FunctionPut($2, $7);
+                  }
+                  | TK_KEYWORD_FUNC TK_IDENTIFIER '('')' TK_ARROW typename { 
+                        VarPut("#Return", $6, false, MakeExpression("", $6));
+                        PushStackFrame($2);
+                        FuncSymbol* func = FunctionGetOverload($2);
+
+                        if( func != NULL ) {
+                              fprintf(stderr, "Function with identifier %s and parameter list already defined | line: %d\n", $2, yylineno);
+                              exit(1);
+                        }
+                        
+                        FunctionPut($2, $6);
+                  }
                   ;
 
-functionDefinition: functionSignature statementsBlock // TODO: check if a function with same definition doesn't exist already
+functionDefinition: functionSignature statementsBlock
                   ;
 
 userDefinedType: TK_KEYWORD_STRUCT TK_TYPEIDENTIFIER TK_BEGIN udVarList TK_END { PushStackFrame($2); }

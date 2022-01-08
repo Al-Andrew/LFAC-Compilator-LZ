@@ -9,6 +9,7 @@ functions:
 {
     name: #GradeConv
     return_type: Int
+    params: Char 
 }
 ------------------
 variables: 

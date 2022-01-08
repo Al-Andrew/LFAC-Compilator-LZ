@@ -1,0 +1,63 @@
+
+------------------
+output: 
+Program corect sintactic
+------------------
+code: 0
+------------------
+functions: 
+{
+    name: #myfunc
+    return_type: Int
+    params: Int Float 
+}
+{
+    name: #myfunc
+    return_type: Int
+    params: Int Int 
+}
+------------------
+variables: 
+{
+    name: #Return
+    typename: Int
+    is_const: false
+    stackframe: #myfunc_
+    value: 0
+}
+{
+    name: #a
+    typename: Int
+    is_const: false
+    stackframe: #myfunc_
+    value: (null)
+}
+{
+    name: #b
+    typename: Float
+    is_const: false
+    stackframe: #myfunc_
+    value: (null)
+}
+{
+    name: #Return
+    typename: Int
+    is_const: false
+    stackframe: #myfunc_
+    value: 0
+}
+{
+    name: #a
+    typename: Int
+    is_const: false
+    stackframe: #myfunc_
+    value: (null)
+}
+{
+    name: #b
+    typename: Int
+    is_const: false
+    stackframe: #myfunc_
+    value: (null)
+}
+------------------
