@@ -1,7 +1,7 @@
 
 ------------------
 output: 
-Could not apply operator + on Char and Char
+Could not apply operator + on Char and Char | line: 3
 ------------------
 code: 1
 ------------------

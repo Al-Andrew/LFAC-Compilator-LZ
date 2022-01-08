@@ -1,7 +1,7 @@
 
 ------------------
 output: 
-Could not apply operator && on Bool and Int
+Could not apply operator && on Bool and Int | line: 3
 ------------------
 code: 1
 ------------------

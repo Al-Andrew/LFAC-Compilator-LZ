@@ -72,7 +72,9 @@ varAssignment: TK_IDENTIFIER '=' expression { //FIXME TODO: CHECK FOR CONST
                   } else if ( strcmp(var->typename, $3->typename) != 0 ) {
                         fprintf(stderr, "Cannot assign expression of type %s to variable of type %s | line: %d\n", $3->typename, var->typename, yylineno); 
                         exit(1);
-                  } 
+                  } else if ( var->is_const == true) {
+                        fprintf(stderr, "Cannot change value of const %s | line: %d", var->name, yylineno);
+                  }     
                   VarUpdateValue(var, $3);
              }
              | TK_IDENTIFIER '[' TK_LITERAL_INT ']' '=' expression {

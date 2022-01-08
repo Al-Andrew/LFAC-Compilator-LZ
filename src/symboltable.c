@@ -7,6 +7,7 @@
 VarSymbol* VarsTable = NULL;
 FuncSymbol* FunctionsTable = NULL;
 VarSymbol* FunctionParamList = NULL;
+extern int yylineno;
 
 /**========================================================================
  *                           SECTION VarSymbol Functions
@@ -216,34 +217,34 @@ Expression* MergeExpression(Expression* t1, Expression* t2, char* op) {
     
     if( strchr( "+-/*", op[0]) != NULL ) {
         if( strcmp(t1->typename, t2->typename) != 0 ) {
-            fprintf(stderr, "Could not apply operator %s on %s and %s\n", op, t1->typename, t2->typename);
+            fprintf(stderr, "Could not apply operator %s on %s and %s | line: %d\n", op, t1->typename, t2->typename, yylineno);
             exit(1);
         }
         if( (strcmp(t1->typename, "Int") != 0) && (strcmp(t1->typename, "Float") != 0) ) {
-            fprintf(stderr, "Could not apply operator %s on %s and %s\n", op, t1->typename, t2->typename);
+            fprintf(stderr, "Could not apply operator %s on %s and %s | line: %d\n", op, t1->typename, t2->typename, yylineno);
             exit(1);
         }
     } else if ( (strcmp(op, "==") == 0) || (strcmp(op, "!=") == 0) ) {
         if( strcmp(t1->typename, t2->typename) != 0 ) {
-            fprintf(stderr, "Could not apply operator %s on %s and %s\n", op, t1->typename, t2->typename);
+            fprintf(stderr, "Could not apply operator %s on %s and %s | line: %d\n", op, t1->typename, t2->typename, yylineno);
             exit(1);
         }
     } else if( (strcmp(op, ">=") == 0) || (strcmp(op, ">") == 0) || (strcmp(op, "<=") == 0) || (strcmp(op, "<") == 0)) {
         if( strcmp(t1->typename, t2->typename) != 0 ) {
-            fprintf(stderr, "Could not apply operator %s on %s and %s\n", op, t1->typename, t2->typename);
+            fprintf(stderr, "Could not apply operator %s on %s and %s | line: %d\n", op, t1->typename, t2->typename, yylineno);
             exit(1);
         }
         if( (strcmp(t1->typename, "Int") != 0) && (strcmp(t1->typename, "Float") != 0) ) {
-            fprintf(stderr, "Could not apply operator %s on %s and %s\n", op, t1->typename, t2->typename);
+            fprintf(stderr, "Could not apply operator %s on %s and %s | line: %d\n", op, t1->typename, t2->typename, yylineno);
             exit(1);
         }
     } else if( (strcmp(op, "&&") == 0) || (strcmp(op, "||") == 0) || (strcmp(op, "!") == 0) ) {
         if( strcmp(t1->typename, t2->typename) != 0 ) {
-            fprintf(stderr, "Could not apply operator %s on %s and %s\n", op, t1->typename, t2->typename);
+            fprintf(stderr, "Could not apply operator %s on %s and %s | line: %d\n", op, t1->typename, t2->typename, yylineno);
             exit(1);
         }
         if( (strcmp(t1->typename, "Bool") != 0) ) {
-            fprintf(stderr, "Could not apply operator %s on %s and %s\n", op, t1->typename, t2->typename);
+            fprintf(stderr, "Could not apply operator %s on %s and %s | line: %d\n", op, t1->typename, t2->typename, yylineno);
             exit(1);
         }
     }
