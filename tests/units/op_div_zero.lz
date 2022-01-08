@@ -1,0 +1,5 @@
+BEGIN_MAIN
+
+Var Int #nope = 420 / 0;
+
+END_MAIN

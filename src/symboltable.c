@@ -104,6 +104,12 @@ char* ASTeval(ASTnode* root) {
             char* right = ASTeval(root->right);
             double left_val = atof(left);
             double right_val = atof(right);
+
+            if( right_val == 0.0 ) {
+                fprintf(stderr, "Cannot divide by 0. | line: %d\n", yylineno);
+                exit(1);
+            }
+
             double res_val = left_val / right_val;
             char *res = malloc(strlen(left) + 3);
             if( strcmp(root->left->typename, "Int") == 0 ) {
