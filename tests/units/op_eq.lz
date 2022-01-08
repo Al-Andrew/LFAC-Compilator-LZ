@@ -1,0 +1,18 @@
+BEGIN_MAIN
+
+Var Int #i = 42;
+Var Float #f = 42.0;
+Var Char #c = 'f';
+Var String #s = "42";
+
+Var Bool #i_mol = #i == 42;
+Var Bool #f_mol = #f == 42.0;
+Var Bool #c_mol = #c == 'f';
+Var Bool #s_mol = #s == "42";
+
+Var Bool #i_nice = #i == 69;
+Var Bool #f_nice = #f == 69.0;
+Var Bool #c_nice = #c == 's';
+Var Bool #s_nice = #s == "69";
+
+END_MAIN

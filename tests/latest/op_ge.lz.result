@@ -1,0 +1,53 @@
+
+------------------
+output: 
+Program corect sintactic
+------------------
+code: 0
+------------------
+functions: 
+------------------
+variables: 
+{
+    name: #f_nice
+    typename: Bool
+    is_const: false
+    stackframe: #Main_
+    value: False
+}
+{
+    name: #i_nice
+    typename: Bool
+    is_const: false
+    stackframe: #Main_
+    value: False
+}
+{
+    name: #f_mol
+    typename: Bool
+    is_const: false
+    stackframe: #Main_
+    value: True
+}
+{
+    name: #i_mol
+    typename: Bool
+    is_const: false
+    stackframe: #Main_
+    value: True
+}
+{
+    name: #f
+    typename: Float
+    is_const: false
+    stackframe: #Main_
+    value: 42.0
+}
+{
+    name: #i
+    typename: Int
+    is_const: false
+    stackframe: #Main_
+    value: 42
+}
+------------------

@@ -1,0 +1,13 @@
+BEGIN_MAIN
+
+Var Int #i = 42;
+Var Float #f = 42.0;
+
+Var Bool #i_mol = #i <= 41;
+Var Bool #f_mol = #f <= 41.0;
+
+Var Bool #i_nice = #i <= 69;
+Var Bool #f_nice = #f <= 69.0;
+
+
+END_MAIN
