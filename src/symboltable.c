@@ -7,6 +7,8 @@
 VarSymbol* VarsTable = NULL;
 FuncSymbol* FunctionsTable = NULL;
 VarSymbol* FunctionParamList = NULL;
+Expression* FunctionCallParamList[32];
+int num_param = 0;
 extern int yylineno;
 
 /**========================================================================
@@ -386,6 +388,11 @@ void PrintVars() {
  *                           SECTION FuncSymbol Functions
  *========================================================================**/
 
+Expression* PutFunctionCallParameter(Expression* exp) {
+    FunctionCallParamList[num_param++] = exp;
+    return exp;
+}
+
 VarSymbol* PutFunctionParameter(char* name, char* typename) {
     VarSymbol* ret = malloc(sizeof(VarSymbol));
 
@@ -444,6 +451,32 @@ FuncSymbol* FunctionGetOverload(char* name) {
     return NULL;
 }
 
+FuncSymbol* FunctionGetCallOverload(char* name) {
+    FuncSymbol* ret;
+    bool diff = false;
+    for (ret = FunctionsTable; ret != NULL; ret = ret->next)
+        if (strcmp (ret->name,name) == 0) {
+            VarSymbol* c1;
+            Expression* c2;
+            int np = num_param;
+            for (c1 = ret->parameters, c2 = FunctionCallParamList[--np];
+                 (c1 != NULL) && (c2 != NULL);
+                  c1 = c1->next, c2 = FunctionCallParamList[--np]) {
+
+                if ( strncmp( c1->typename,c2->typename, strlen(c1->typename)) == 0 )
+                    continue; 
+                else {
+                    diff = true;
+                    break;
+                }
+            }
+            if(!diff) { return ret; };
+        }
+    return NULL;
+}
+
+
+
 void PrintFunctions() {
     FuncSymbol* current = FunctionsTable;
     FILE* out = fopen("Functions.txt", "w");
@@ -459,4 +492,37 @@ void PrintFunctions() {
 
         current = current->next;
     }
+}
+
+bool callIntrinsic(FuncSymbol* func) {
+    if( (strcmp(func->name, "#PrintI") == 0) || (strcmp(func->name, "#PrintF") == 0) 
+     || (strcmp(func->name, "#PrintC") == 0) || (strcmp(func->name, "#PrintS") == 0)) {
+        printf("%s", ASTeval(FunctionCallParamList[num_param-1]->ast));
+        return true;
+    } else if ((strcmp(func->name, "#PrintNL") == 0)) {
+        printf("\n");
+        return true;
+    }
+    return false;
+}
+
+void setupIntrinsics() {
+    FunctionPut("#PrintI", "Int");
+    FunctionsTable->parameters = malloc(sizeof(VarSymbol));
+    FunctionsTable->parameters->name = "i";
+    FunctionsTable->parameters->typename = "Int";
+    FunctionPut("#PrintF", "Int");
+    FunctionsTable->parameters = malloc(sizeof(VarSymbol));
+    FunctionsTable->parameters->name = "f";
+    FunctionsTable->parameters->typename = "Float";
+    FunctionPut("#PrintC", "Int");
+    FunctionsTable->parameters = malloc(sizeof(VarSymbol));
+    FunctionsTable->parameters->name = "c";
+    FunctionsTable->parameters->typename = "Char";
+    FunctionPut("#PrintS", "Int");
+    FunctionsTable->parameters = malloc(sizeof(VarSymbol));
+    FunctionsTable->parameters->name = "s";
+    FunctionsTable->parameters->typename = "String";
+    FunctionPut("#PrintNL", "Int");
+    FunctionsTable->parameters = NULL;
 }

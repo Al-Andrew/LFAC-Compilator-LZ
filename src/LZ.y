@@ -205,8 +205,8 @@ functionParametersList: typename TK_IDENTIFIER ',' functionParametersList { VarP
                       | typename TK_IDENTIFIER { VarPut($2, $1, false, MakeExpression("", $1)); PutFunctionParameter($2, $1); }
                       ;
 
-functionCallParametersList: expression ',' functionCallParametersList //TODO
-                          | expression
+functionCallParametersList: expression ',' functionCallParametersList { PutFunctionCallParameter($1); }
+                          | expression { PutFunctionCallParameter($1); }
                           ;
 
 
@@ -321,27 +321,30 @@ expression: literal {
                   free(freeMe);
           }
           | TK_IDENTIFIER '(' functionCallParametersList ')' { 
-                  FuncSymbol* func = FunctionGet($1);
+                  FuncSymbol* func = FunctionGetCallOverload($1);
                   if( func == NULL ) {
-                        fprintf(stderr, "No function named %s found | line: %d", $1, yylineno); //TODO this needs to also do typechecking
-                        exit(1);
+                              fprintf(stderr, "No function named %s with given parameter list found found | line: %d\n", $1, yylineno);
+                              exit(1);
                   }
-
+                  callIntrinsic(func);
                   $$ = MakeExpression(func->name, func->return_type);
                   $$->ast = ASTbuild(func->name, NULL, NULL, AST_FUNCTION_CALL);
-          } //FIXME TODO: de implementat (sa treaca de lex, sa nu functioneze)
+                  num_param = 0;
+          }
           | TK_IDENTIFIER '('')' {
-                  FuncSymbol* func = FunctionGet($1);
+                  FuncSymbol* func = FunctionGetCallOverload($1);
                   if( func == NULL ) {
-                        fprintf(stderr, "No function named %s found | line: %d", $1, yylineno); //TODO this needs to also do typechecking
+                        fprintf(stderr, "No function named %s with given parameter list found found | line: %d\n", $1, yylineno);
                         exit(1);
                   }
+                  callIntrinsic(func);
 
                   $$ = MakeExpression(func->name, func->return_type);
                   $$->ast = ASTbuild(func->name, NULL, NULL, AST_FUNCTION_CALL);
                   $$->ast->typename = malloc(strlen(func->return_type) + 1);
                   strcpy($$->ast->typename, func->return_type);
-          } //FIXME TODO: de implementat (sa treaca de lex, sa nu functioneze)
+                  num_param = 0;
+          }
           | '(' expression ')' { 
                   $$ = MakeExpression($2->text, $2->typename); 
                   $$->ast = $2->ast;
@@ -368,6 +371,9 @@ int yyerror(char * s) {
 }
 
 int main(int argc, char** argv){
+      
+      setupIntrinsics();
+
       yyin=fopen(argv[1],"r");
       yyparse();
 }

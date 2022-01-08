@@ -1,0 +1,12 @@
+BEGIN_MAIN
+
+#PrintI(69);
+#PrintNL();
+#PrintF(69.0);
+#PrintNL();
+#PrintC('6');
+#PrintNL();
+#PrintS("69");
+#PrintNL();
+
+END_MAIN

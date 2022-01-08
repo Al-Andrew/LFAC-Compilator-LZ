@@ -66,7 +66,12 @@ VarSymbol* VarGetMember(char* name, VarSymbol* parent_struct);
 FuncSymbol* FunctionPut(char* name, char* return_type);
 FuncSymbol* FunctionGet(char* name);
 FuncSymbol* FunctionGetOverload(char* name);
+FuncSymbol* FunctionGetCallOverload(char* name);
 VarSymbol* PutFunctionParameter(char* name, char* typename);
+Expression* PutFunctionCallParameter(Expression* exp);
+
+void setupIntrinsics();
+bool callIntrinsic(FuncSymbol* func);
 
 Expression* MakeExpression(char* text, char* typename);
 Expression* MergeExpression(Expression* t1, Expression* t2, char* op);
@@ -77,4 +82,6 @@ void PrintFunctions();
 extern VarSymbol* VarsTable;
 extern FuncSymbol* FunctionsTable;
 extern VarSymbol* FunctionParamList;
+extern Expression* FunctionCallParamList[32];
+extern int num_param;
 #endif

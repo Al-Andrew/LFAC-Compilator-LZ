@@ -1,7 +1,7 @@
 
 ------------------
 output: 
-Cannot assign value 0 of type Int to #score of type Char | line: 16
+No function named #GradeConv with given parameter list found found | line: 16
 ------------------
 code: 1
 ------------------

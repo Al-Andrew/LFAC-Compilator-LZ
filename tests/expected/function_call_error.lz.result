@@ -1,7 +1,7 @@
 
 ------------------
 output: 
-No function named #GradeConv with given parameter list found found | line: 16
+No function named #myfunc with given parameter list found found | line: 16
 ------------------
 code: 1
 ------------------

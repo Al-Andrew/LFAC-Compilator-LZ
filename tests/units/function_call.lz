@@ -1,0 +1,19 @@
+BEGIN_DEFINITIONS
+
+Func #myfunc(Int #a, Int #b) -> Int
+BEGIN
+    #Return = 69;
+END
+Func #myfunc(Int #a, Float #b) -> Int 
+BEGIN
+    #Return = 42;
+END
+
+END_DEFINITIONS
+
+BEGIN_MAIN
+
+Var Int #x = #myfunc(0, 3.0);
+Var Int #y = #myfunc(0, 3);
+
+END_MAIN
