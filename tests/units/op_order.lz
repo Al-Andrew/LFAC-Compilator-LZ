@@ -1,0 +1,5 @@
+BEGIN_MAIN
+
+Var Int #x =  15 / 3 + 3 * 5;
+
+END_MAIN

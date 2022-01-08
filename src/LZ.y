@@ -60,8 +60,8 @@ globalsList:  varDeclaration ';' globalsList
             | constDeclaration ';'
             ;
 
-varDeclaration: TK_KEYWORD_VAR typename TK_IDENTIFIER              { VarPut($3, $2, false, MakeExpression("", $2)); }
-            | TK_KEYWORD_VAR typename TK_IDENTIFIER '=' expression { VarPut($3, $2, false, $5  ); }
+varDeclaration: TK_KEYWORD_VAR typename TK_IDENTIFIER              { VarPut($3, $2, false, MakeExpression("", $2)); } //TODO make shure no other var with same name already exists (in scope???)
+            | TK_KEYWORD_VAR typename TK_IDENTIFIER '=' expression { VarPut($3, $2, false, $5  ); } 
             ;
 
 varAssignment: TK_IDENTIFIER '=' expression {
@@ -108,18 +108,25 @@ varAssignment: TK_IDENTIFIER '=' expression {
              }
              | TK_IDENTIFIER '.' TK_IDENTIFIER '=' expression {
                   VarSymbol* parent_struct = VarGet($1);
+
+                  if( parent_struct == NULL ) {
+                        fprintf(stderr, "No such variable exists: %s | line: %d\n", $1 , yylineno);
+                  } else if( strchr(parent_struct->typename, '.') != 0 ) {
+                        fprintf(stderr, "Variable %s not a struct | line: %d\n", $1, yylineno);
+                  }
+
                   VarSymbol* var = VarGetMember($3, parent_struct);
 
                   if( var == NULL ) {
                         fprintf(stderr, "No member %s::%s found | line: %d\n", parent_struct->typename, $3 , yylineno);
                         exit(1);
-                  } //FIXME TODO: TYPECHECKING
+                  }
 
                   VarUpdateValue(var, $5);
              }
              ;
 
-constDeclaration: TK_KEYWORD_CONST typename TK_IDENTIFIER '=' expression { VarPut($3, $2, true, $5);}
+constDeclaration: TK_KEYWORD_CONST typename TK_IDENTIFIER '=' expression { VarPut($3, $2, true, $5);} //TODO make shure no other var with same name already exists
             ;
 
 definitions: TK_BEGIN_DEFINITIONS definitionsList TK_END_DEFINITIONS
@@ -196,12 +203,7 @@ literal: TK_LITERAL_BOOL {$$ = $1;}
        | TK_LITERAL_FLOAT {$$ = $1;}
        | TK_LITERAL_INT {$$ = $1;}
        | TK_LITERAL_STRING {$$ = $1;}
-       | '{' literalsList '}' {$$ = "unimplemented";}//de implementat //ANCHOR - WTF IS THIS FOR?
        ;
-
-literalsList: literal //de implementat {$$ = $1;}
-            | literal literalsList //de implementat {$$ = $1;}
-            ;
 
 expression: literal {
                   $$ = MakeExpression($1, LiteralToTypename($1));
@@ -246,7 +248,12 @@ expression: literal {
                         fprintf(stderr, "No such ud variable exists: %s, line: %d\n", $1, yylineno); 
                         exit(1);
                   }
-                  char buff[64]; //FIXME this assumes that var has the array type :PPP
+                  if( strchr(var->typename, '[') == NULL ) {
+                        fprintf(stderr, "Cannot index variable of type %s", var->typename);
+                        exit(1);
+                  }
+
+                  char buff[64];
                   sprintf(buff, "%.*s", (int)(strchr(var->typename,']') - strchr(var->typename,'[') - 1), strchr(var->typename,'[') + 1);
                   if( atoi($3) >= atoi(buff) ) {
                         fprintf(stderr, "Cannot acces element %s of %s:%s | line: %d\n", $3, var->name,var->typename, yylineno); 
