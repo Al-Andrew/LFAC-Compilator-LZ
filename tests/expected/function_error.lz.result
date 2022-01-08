@@ -17,7 +17,7 @@ variables:
     typename: Char
     is_const: false
     stackframe: #Main_
-    value: unimplemented
+    value: 0
 }
 {
     name: #mygrade
@@ -38,6 +38,6 @@ variables:
     typename: Char
     is_const: false
     stackframe: #GradeConv_
-    value: 
+    value: (null)
 }
 ------------------
