@@ -14,7 +14,7 @@ functions:
 variables: 
 {
     name: #score
-    typename: Char
+    typename: Int
     is_const: false
     stackframe: #Main_
     value: 0

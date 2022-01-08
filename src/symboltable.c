@@ -214,6 +214,9 @@ Expression* MergeExpression(Expression* t1, Expression* t2, char* op) {
     strcat(ret->text, op);
     strcat(ret->text, " ");
     strcat(ret->text, t2->text);
+
+    ret->typename = malloc(strlen(t1->typename) + 1);
+    strcpy(ret->typename, t1->typename);
     
     if( strchr( "+-/*", op[0]) != NULL ) {
         if( strcmp(t1->typename, t2->typename) != 0 ) {
@@ -229,6 +232,8 @@ Expression* MergeExpression(Expression* t1, Expression* t2, char* op) {
             fprintf(stderr, "Could not apply operator %s on %s and %s | line: %d\n", op, t1->typename, t2->typename, yylineno);
             exit(1);
         }
+        free(ret->typename);
+        ret->typename = "Bool";
     } else if( (strcmp(op, ">=") == 0) || (strcmp(op, ">") == 0) || (strcmp(op, "<=") == 0) || (strcmp(op, "<") == 0)) {
         if( strcmp(t1->typename, t2->typename) != 0 ) {
             fprintf(stderr, "Could not apply operator %s on %s and %s | line: %d\n", op, t1->typename, t2->typename, yylineno);
@@ -238,6 +243,7 @@ Expression* MergeExpression(Expression* t1, Expression* t2, char* op) {
             fprintf(stderr, "Could not apply operator %s on %s and %s | line: %d\n", op, t1->typename, t2->typename, yylineno);
             exit(1);
         }
+        ret->typename = "Bool";
     } else if( (strcmp(op, "&&") == 0) || (strcmp(op, "||") == 0) || (strcmp(op, "!") == 0) ) {
         if( strcmp(t1->typename, t2->typename) != 0 ) {
             fprintf(stderr, "Could not apply operator %s on %s and %s | line: %d\n", op, t1->typename, t2->typename, yylineno);
@@ -248,9 +254,6 @@ Expression* MergeExpression(Expression* t1, Expression* t2, char* op) {
             exit(1);
         }
     }
-
-    ret->typename = malloc(strlen(t1->typename) + 1);
-    strcpy(ret->typename, t1->typename);
 
     ret->ast = ASTbuild(op, t1->ast, t2->ast, AST_OPERAND);
     ret->ast->typename = malloc(strlen(t1->typename) + 1);
@@ -294,7 +297,7 @@ VarSymbol* VarPut(char* name, char* typename, bool is_const, Expression* value) 
             }
         }
     } else if ( strchr(typename, '[') != NULL ) { //Add array elements to the var table
-        char buff[64]; //FIXME this assumes that var has the array type :PPP
+        char buff[64]; 
         sprintf(buff, "%.*s", (int)(strchr(ret->typename,']') - strchr(ret->typename,'[') - 1), strchr(ret->typename,'[') + 1);
         int size = atoi(buff);
         char namebuff[256];
@@ -312,8 +315,12 @@ VarSymbol* VarPut(char* name, char* typename, bool is_const, Expression* value) 
 
     ret->is_const = is_const;
 
+    if( strcmp(ret->typename, value->typename) != 0 ) {
+        fprintf(stderr, "Cannot assign value %s of type %s to %s of type %s | line: %d\n", ASTeval(value->ast), value->typename, ret->name, ret->typename, yylineno);
+        exit(1);
+    }
 
-    //FIXME TODO: Typechecking
+
     if( (value == NULL) || (value->text[0] == 0) )
         ret->value == "";
     else {
@@ -326,6 +333,11 @@ VarSymbol* VarPut(char* name, char* typename, bool is_const, Expression* value) 
 }
 
 void VarUpdateValue(VarSymbol* var, Expression* new_value) {
+
+    if( strcmp(var->typename, new_value->typename) != 0 ) {
+        fprintf(stderr, "Cannot assign value %s of type %s to %s of type %s | line: %d\n", ASTeval(new_value->ast), new_value->typename, var->name, var->typename, yylineno);
+        exit(1);
+    }
     var->value = ASTeval(new_value->ast);
 }
 

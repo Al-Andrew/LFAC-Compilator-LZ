@@ -235,7 +235,7 @@ expression: literal {
                   strcat(freeMe, $1);
                   strcat(freeMe, ".");
                   strcat(freeMe, $3);
-                  $$ = MakeExpression(freeMe, var->typename);
+                  $$ = MakeExpression(freeMe, member->typename);
                   $$->ast = ASTbuild(freeMe, NULL, NULL, AST_MEMBER_VARIABLE);
                   $$->ast->typename = member->typename;
                   free(freeMe);
@@ -262,7 +262,8 @@ expression: literal {
                   $$ = MakeExpression(freeMe, var->typename);
                   $$->ast = ASTbuild(freeMe, NULL, NULL, AST_ARRAY_ACCESS);
                   $$->ast->typename = malloc(strlen(var->typename));
-                  strncpy($$->ast->typename, var->typename, strchr(var->typename, '[') - var->typename - 1);
+                  strncpy($$->ast->typename, var->typename, strchr(var->typename, '[') - var->typename);
+                  strcpy($$->typename, $$->ast->typename);
 
                   free(freeMe);
           }

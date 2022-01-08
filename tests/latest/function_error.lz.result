@@ -1,43 +1,11 @@
 
 ------------------
 output: 
-Program corect sintactic
+Cannot assign value 0 of type Int to #score of type Char | line: 16
 ------------------
-code: 0
+code: 1
 ------------------
 functions: 
-{
-    name: #GradeConv
-    return_type: Int
-}
 ------------------
 variables: 
-{
-    name: #score
-    typename: Char
-    is_const: false
-    stackframe: #Main_
-    value: 0
-}
-{
-    name: #mygrade
-    typename: Int
-    is_const: false
-    stackframe: #Main_
-    value: 100
-}
-{
-    name: #Return
-    typename: Int
-    is_const: false
-    stackframe: #GradeConv_
-    value: 9
-}
-{
-    name: #arg2
-    typename: Char
-    is_const: false
-    stackframe: #GradeConv_
-    value: (null)
-}
 ------------------

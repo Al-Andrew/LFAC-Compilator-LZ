@@ -1,0 +1,5 @@
+BEGIN_MAIN
+
+Var Int #x = 'c';
+
+END_MAIN
