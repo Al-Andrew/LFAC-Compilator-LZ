@@ -107,7 +107,7 @@ functionSignature: TK_KEYWORD_FUNC TK_IDENTIFIER '(' functionParametersList ')' 
                   | TK_KEYWORD_FUNC TK_IDENTIFIER '('')' TK_ARROW typename { VarPut("#Return", $6, false, MakeExpression("", $6)); PushStackFrame($2); FunctionPut($2, $6); }
                   ;
 
-functionDefinition: functionSignature statementsBlock 
+functionDefinition: functionSignature statementsBlock // TODO: check if a function with same definition doesn't exist already
                   ;
 
 userDefinedType: TK_KEYWORD_STRUCT TK_TYPEIDENTIFIER TK_BEGIN udVarList TK_END { PushStackFrame($2); }
@@ -177,6 +177,8 @@ literalsList: literal //de implementat {$$ = $1;}
 
 expression: literal {
                   $$ = MakeExpression($1, LiteralToTypename($1));
+                  $$->ast = ASTbuild($1, NULL, NULL, AST_LITERAL);
+                  $$->ast->typename = LiteralToTypename($1);
             }
           | TK_IDENTIFIER { 
                   VarSymbol* var = VarGet($1); 
@@ -184,7 +186,9 @@ expression: literal {
                         fprintf(stderr, "No such variable exists: %s | line: %d\n", $1, yylineno); 
                         exit(1);
                   }
-                  $$ = MakeExpression($1, var->typename); 
+                  $$ = MakeExpression($1, var->typename);
+                  $$->ast = ASTbuild($1, NULL, NULL, AST_VARIABLE);
+                  $$->ast->typename = var->typename;
             }
           | TK_IDENTIFIER '.' TK_IDENTIFIER {
                   VarSymbol* var = VarGet($1); 
@@ -204,6 +208,8 @@ expression: literal {
                   strcat(freeMe, ".");
                   strcat(freeMe, $3);
                   $$ = MakeExpression(freeMe, var->typename);
+                  $$->ast = ASTbuild(freeMe, NULL, NULL, AST_MEMBER_VARIABLE);
+                  $$->ast->typename = member->typename;
                   free(freeMe);
           }
           | TK_IDENTIFIER '[' TK_LITERAL_INT ']' {
@@ -212,7 +218,7 @@ expression: literal {
                         fprintf(stderr, "No such ud variable exists: %s, line: %d\n", $1, yylineno); 
                         exit(1);
                   }
-                  char buff[64];
+                  char buff[64]; //FIXME this assumes that var has the array type :PPP
                   sprintf(buff, "%.*s", (int)(strchr(var->typename,']') - strchr(var->typename,'[') - 1), strchr(var->typename,'[') + 1);
                   if( atoi($3) >= atoi(buff) ) {
                         fprintf(stderr, "Cannot acces element %s of %s:%s | line: %d\n", $3, var->name,var->typename, yylineno); 
@@ -226,11 +232,38 @@ expression: literal {
                   strcat(freeMe, $3);
                   strcat(freeMe, "]");
                   $$ = MakeExpression(freeMe, var->typename);
+                  $$->ast = ASTbuild(freeMe, NULL, NULL, AST_ARRAY_ACCESS);
+                  $$->ast->typename = malloc(strlen(var->typename));
+                  strncpy($$->ast->typename, var->typename, strchr(var->typename, '[') - var->typename - 1);
+
                   free(freeMe);
           }
-          | TK_IDENTIFIER '(' functionCallParametersList ')' { $$ = MakeExpression("unimplemented", "unimplemented"); } //FIXME TODO: de implementat (sa treaca de lex, sa nu functioneze) 
-          | TK_IDENTIFIER '('')' { $$ = MakeExpression("unimplemented", "unimplemented"); } //FIXME TODO: de implementat (sa treaca de lex, sa nu functioneze)
-          | '(' expression ')' { $$ = MakeExpression($2->text, $2->typename); }
+          | TK_IDENTIFIER '(' functionCallParametersList ')' { 
+                  FuncSymbol* func = FunctionGet($1);
+                  if( func == NULL ) {
+                        fprintf(stderr, "No function named %s found | line: %d", $1, yylineno); //TODO this needs to also do typechecking
+                        exit(1);
+                  }
+
+                  $$ = MakeExpression(func->name, func->return_type);
+                  $$->ast = ASTbuild(func->name, NULL, NULL, AST_FUNCTION_CALL);
+          } //FIXME TODO: de implementat (sa treaca de lex, sa nu functioneze)
+          | TK_IDENTIFIER '('')' {
+                  FuncSymbol* func = FunctionGet($1);
+                  if( func == NULL ) {
+                        fprintf(stderr, "No function named %s found | line: %d", $1, yylineno); //TODO this needs to also do typechecking
+                        exit(1);
+                  }
+
+                  $$ = MakeExpression(func->name, func->return_type);
+                  $$->ast = ASTbuild(func->name, NULL, NULL, AST_FUNCTION_CALL);
+                  $$->ast->typename = malloc(strlen(func->return_type) + 1);
+                  strcpy($$->ast->typename, func->return_type);
+          } //FIXME TODO: de implementat (sa treaca de lex, sa nu functioneze)
+          | '(' expression ')' { 
+                  $$ = MakeExpression($2->text, $2->typename); 
+                  $$->ast = $2->ast;
+          }
           | expression '+' expression { $$ = MergeExpression($1, $3, "+"); }
           | expression '-' expression { $$ = MergeExpression($1, $3, "-"); }
           | expression '*' expression { $$ = MergeExpression($1, $3, "*"); }

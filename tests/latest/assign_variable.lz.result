@@ -1,0 +1,25 @@
+
+------------------
+output: 
+Program corect sintactic
+------------------
+code: 0
+------------------
+functions: 
+------------------
+variables: 
+{
+    name: #y
+    typename: Int
+    is_const: false
+    stackframe: #Main_
+    value: 5
+}
+{
+    name: #x
+    typename: Int
+    is_const: false
+    stackframe: #Main_
+    value: 5
+}
+------------------

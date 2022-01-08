@@ -14,6 +14,6 @@ BEGIN_MAIN
 
     #p1.#Nume = "Andrei";
     #p1.#Varsta = 20;
-    #p2.#Nume = "Rares";
-    #p2.#Varsta = 21;
+    #p2.#Nume = #p1.#Nume;
+    #p2.#Varsta = #p1.#Varsta;
 END_MAIN

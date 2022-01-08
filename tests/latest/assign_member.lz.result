@@ -20,14 +20,14 @@ variables:
     typename: Int
     is_const: false
     stackframe: $Persoana_#p2_
-    value: 21
+    value: 20
 }
 {
     name: #Nume
     typename: String
     is_const: false
     stackframe: $Persoana_#p2_
-    value: "Rares"
+    value: "Andrei"
 }
 {
     name: #p1

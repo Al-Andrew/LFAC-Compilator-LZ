@@ -37,6 +37,81 @@ Expression* MakeExpression(char* text, char* typename) {
     return ret;
 }
 
+char* ASTeval(ASTnode* root) {
+    switch (root->type)
+    {
+    case AST_LITERAL:
+        return root->text;
+        break;
+    case AST_VARIABLE: {
+        VarSymbol* var = VarGet(root->text);
+        return var->value;
+        }
+        break;
+    case AST_MEMBER_VARIABLE: {
+        int len = strchr(root->text, '.') - root->text + 2;
+        char* parent = malloc(len);
+        bzero(parent, len);
+        strncpy(parent, root->text, len - 2);
+        len = strlen(root->text) - (strchr(root->text, '.') - root->text) + 2;
+        char* member = malloc(len);
+        bzero(member, len);
+        strcpy(member, strchr(root->text, '.') + 1);
+        VarSymbol* var = VarGetMember(member, VarGet(parent));
+        return var->value;
+        }
+        break;
+    case AST_ARRAY_ACCESS:
+        return "0"; //TODO: implement arrays pls
+        break;
+    case AST_FUNCTION_CALL:
+        return "0";
+        break;
+    case AST_OPERAND: {
+
+        if( strcmp(root->text, "+") == 0 ) {
+            char* left = ASTeval(root->left);
+            char* right = ASTeval(root->left);
+            double left_val = atof(left);
+            double right_val = atof(right);
+            double res_val = left_val + right_val;
+            char *res = malloc(strlen(left) + 3);
+            if( strcmp(root->left->typename, "Int") == 0 ) {
+                sprintf(res, "%d", (int)res_val);
+            } else {
+                sprintf(res, "%f", (float)res_val);
+            }
+            return res;
+        } else if( strcmp(root->text, "-") == 0 ) {
+
+        } else if( strcmp(root->text, "/") == 0 ) {
+
+        } else if( strcmp(root->text, "*") == 0 ) {
+
+        }
+        break;
+    }
+    default:
+        return "0";
+        break;
+    }
+    return "0";
+}
+
+ASTnode* ASTbuild(char* root, ASTnode* left, ASTnode* right, enum ASTnodeType type) {
+    ASTnode* ret = malloc(sizeof(ASTnode));
+
+    ret->text = malloc(strlen(root) + 1);
+    strcpy(ret->text, root);
+
+    ret->left = left;
+    ret->right = right;
+
+    ret->type = type;
+
+    return ret;
+}
+
 Expression* MergeExpression(Expression* t1, Expression* t2, char* op) {
     Expression* ret = malloc(sizeof(Expression));
 
@@ -49,9 +124,14 @@ Expression* MergeExpression(Expression* t1, Expression* t2, char* op) {
     strcat(ret->text, op);
     strcat(ret->text, " ");
     strcat(ret->text, t2->text);
-    // TODO: TYPECHECKING
+    //FIXME TODO: TYPECHECKING
+
     ret->typename = malloc(strlen(t1->typename) + 1);
     strcpy(ret->typename, t1->typename);
+
+    ret->ast = ASTbuild(op, t1->ast, t2->ast, AST_OPERAND);
+    ret->ast->typename = malloc(strlen(t1->typename) + 1);
+    strcpy(ret->ast->typename, t1->typename);
 
     return ret;
 }
@@ -71,7 +151,6 @@ void PushStackFrame(char* frame) {
 
 VarSymbol* VarPut(char* name, char* typename, bool is_const, Expression* value) {
     VarSymbol* ret = malloc(sizeof(VarSymbol));
-
     ret->name = malloc (strlen(name)+1);
     strcpy(ret->name, name);
 
@@ -83,7 +162,8 @@ VarSymbol* VarPut(char* name, char* typename, bool is_const, Expression* value) 
         for (curr = VarsTable; curr != NULL; curr = curr->next) {
             if(strncmp(curr->stackframe, typename, strlen(typename)) == 0 ) {
                 if( strlen(curr->stackframe) == strlen(typename) + 1 ) {
-                    VarSymbol* latest = VarPut(curr->name, curr->typename, curr->is_const, MakeExpression(curr->value, curr->typename));
+                    char* vl = curr->value == NULL?"":curr->value;
+                    VarSymbol* latest = VarPut(curr->name, curr->typename, curr->is_const, MakeExpression(vl, curr->typename));
                     strcat(latest->stackframe, curr->stackframe);
                     strcat(latest->stackframe, name);
                     strcat(latest->stackframe, "_");
@@ -95,13 +175,12 @@ VarSymbol* VarPut(char* name, char* typename, bool is_const, Expression* value) 
 
     ret->is_const = is_const;
 
-    
+
     //FIXME TODO: Typechecking
-    if(value == NULL)
-        ret->value == NULL;
+    if( (value == NULL) || (value->text[0] == 0) )
+        ret->value == "";
     else {
-        ret->value = (char*)malloc(strlen(value->text) + 1);
-        strcpy(ret->value, value->text);  
+        ret->value = ASTeval(value->ast);
     }
 
     ret->next = VarsTable;
@@ -110,8 +189,7 @@ VarSymbol* VarPut(char* name, char* typename, bool is_const, Expression* value) 
 }
 
 void VarUpdateValue(VarSymbol* var, Expression* new_value) {
-    var->value = (char*)malloc(strlen(new_value->text) + 1);
-    strcpy(var->value, new_value->text);
+    var->value = ASTeval(new_value->ast);
 }
 
 VarSymbol* VarGet(char* name) {

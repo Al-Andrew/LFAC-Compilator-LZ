@@ -1,0 +1,6 @@
+BEGIN_MAIN
+
+Var Int #x;
+#x = 5;
+
+END_MAIN

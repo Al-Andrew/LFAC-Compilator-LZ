@@ -24,10 +24,33 @@ struct FuncSymbol{
 };
 typedef struct FuncSymbol FuncSymbol;
 
+enum ASTnodeType {
+    AST_NONE = 0,
+    AST_VARIABLE,
+    AST_MEMBER_VARIABLE,
+    AST_ARRAY_ACCESS,
+    AST_FUNCTION_CALL,
+    AST_LITERAL,
+    AST_OPERAND
+};
+
+struct ASTnode{
+    char* text;
+    struct ASTnode* left;
+    struct ASTnode* right;
+
+    enum ASTnodeType type;
+    char* typename;
+};
+typedef struct ASTnode ASTnode;
+
+ASTnode* ASTbuild(char* root, ASTnode* left, ASTnode* right, enum ASTnodeType type);
 
 struct Expression{
     char* text;
     char* typename;
+
+    ASTnode* ast;
 };
 typedef struct Expression Expression;
 

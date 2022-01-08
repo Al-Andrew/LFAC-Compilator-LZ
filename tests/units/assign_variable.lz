@@ -1,0 +1,6 @@
+BEGIN_MAIN
+
+Var Int #x = 5;
+Var Int #y = #x;
+
+END_MAIN
