@@ -142,7 +142,15 @@ varAssignment: TK_IDENTIFIER '=' expression {
              }
              ;
 
-constDeclaration: TK_KEYWORD_CONST typename TK_IDENTIFIER '=' expression { VarPut($3, $2, true, $5);} //TODO make shure no other var with same name already exists
+constDeclaration: TK_KEYWORD_CONST typename TK_IDENTIFIER '=' expression  {
+                  VarSymbol* var = VarGet($3);
+
+                  if( var != NULL ) {
+                        fprintf(stderr, "Identifier %s already defined | line: %d\n", $3, yylineno);
+                        exit(1);
+                  }
+                  VarPut($3, $2, true, $5); 
+            }
             ;
 
 definitions: TK_BEGIN_DEFINITIONS definitionsList TK_END_DEFINITIONS

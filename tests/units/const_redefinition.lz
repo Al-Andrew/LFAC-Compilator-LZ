@@ -1,0 +1,6 @@
+BEGIN_GLOBAL
+
+Const Float #f = 3.0;
+Const Float #f = 5.0;
+
+END_GLOBAL
