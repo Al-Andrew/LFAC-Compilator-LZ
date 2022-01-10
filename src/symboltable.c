@@ -48,7 +48,7 @@ char* ASTeval(ASTnode* root) {
         break;
     case AST_VARIABLE: {
         VarSymbol* var = VarGet(root->text);
-        return var->value;
+        return var->value == NULL? "0":var->value;
         }
         break;
     case AST_MEMBER_VARIABLE: {
@@ -61,7 +61,7 @@ char* ASTeval(ASTnode* root) {
         bzero(member, len);
         strcpy(member, strchr(root->text, '.') + 1);
         VarSymbol* var = VarGetMember(member, VarGet(parent));
-        return var->value;
+        return var->value == NULL? "0":var->value;
         }
         break;
     case AST_ARRAY_ACCESS: {
@@ -70,8 +70,15 @@ char* ASTeval(ASTnode* root) {
         return elem->value;
         }
         break;
-    case AST_FUNCTION_CALL:
-        return "0";
+    case AST_FUNCTION_CALL: {
+        char* freeMe = malloc(strlen(root->text)+2);
+        bzero(freeMe, strlen(root->text)+2);
+        strcat(freeMe, root->text);
+        strcat(freeMe, "_");
+        VarSymbol* retval = VarGetScoped("#Return", freeMe);
+        free(freeMe);
+        return retval->value;
+        }
         break;
     case AST_OPERAND: {
 
@@ -346,6 +353,8 @@ void VarUpdateValue(VarSymbol* var, Expression* new_value) {
         fprintf(stderr, "Cannot assign value %s of type %s to %s of type %s | line: %d\n", ASTeval(new_value->ast), new_value->typename, var->name, var->typename, yylineno);
         exit(1);
     }
+    
+
     var->value = ASTeval(new_value->ast);
 }
 
@@ -357,15 +366,30 @@ VarSymbol* VarGet(char* name) {
     return NULL;
 }
 
+VarSymbol* VarGetScoped(char* name, char* scope) {
+    VarSymbol* ret;
+    for (ret = VarsTable; ret != NULL; ret = ret->next)
+        if ((strcmp (ret->name,name) == 0) && (strcmp (ret->stackframe,scope) == 0) )
+            return ret;
+    return NULL;
+}
+
 VarSymbol* VarGetMember(char* name, VarSymbol* parent_struct) {
     VarSymbol* ret;
     for (ret = VarsTable; ret != NULL; ret = ret->next)
         if ((strcmp (ret->name,name) == 0)) {
-            if (strncmp(ret->stackframe, parent_struct->typename, strlen(parent_struct->typename)) == 0)
-                if ( strncmp(ret->stackframe + strlen(parent_struct->typename) + 1,
-                 parent_struct->name, strlen(parent_struct->name)) == 0 )
-
+            if (strncmp(ret->stackframe, parent_struct->typename, strlen(parent_struct->typename)) == 0) {
+                char* freeMe = malloc(strlen(parent_struct->name) + 2);
+                bzero(freeMe, strlen(parent_struct->name) + 2);
+                strcat(freeMe, parent_struct->name);
+                strcat(freeMe, "_");
+                if ( strcmp(ret->stackframe + strlen(parent_struct->typename) + 1,
+                 freeMe) == 0 ) {
+                    free(freeMe);
                     return ret;
+                }
+                free(freeMe);
+            }
         }
     return NULL;
 }

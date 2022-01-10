@@ -43,7 +43,7 @@ variables:
     typename: Int
     is_const: false
     stackframe: #Main_
-    value: 0
+    value: 9
 }
 {
     name: #mygrade

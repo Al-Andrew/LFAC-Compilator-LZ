@@ -4,9 +4,8 @@ LZ: folders lex yac
 clean: 
 	rm -rf build/ temp/ Functions.txt Vars.txt proiect.zip
 
-
 example: LZ
-	./build/LZ ./tests/units/example.lz
+	./build/LZ ./tests/units/.example.lz
 
 test: LZ
 	./test.sh

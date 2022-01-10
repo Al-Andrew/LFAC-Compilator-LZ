@@ -61,6 +61,7 @@ char* LiteralToTypename(char* literal);
 void VarUpdateValue(VarSymbol* var, Expression* new_value);
 VarSymbol* VarPut(char* name, char* typename, bool is_const, Expression* valoare);
 VarSymbol* VarGet(char* name);
+VarSymbol* VarGetScoped(char* name, char* scope);
 VarSymbol* VarGetMember(char* name, VarSymbol* parent_struct);
 
 FuncSymbol* FunctionPut(char* name, char* return_type);
